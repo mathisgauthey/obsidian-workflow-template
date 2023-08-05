@@ -1,0 +1,7 @@
+{
+  "userIllegalSymbols": [],
+  "ignoredFiles": {},
+  "ignoreRegex": "Templates|Workout_Log|Media Backlog",
+  "useFileOpenHook": true,
+  "useFileSaveHook": true
+}

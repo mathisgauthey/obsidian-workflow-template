@@ -1,0 +1,217 @@
+{
+  "TagSettings": [
+    {
+      "attributes": {
+        "suffix": "🏃"
+      },
+      "opened": false,
+      "enable": true,
+      "tagDetail": {
+        "attributes": {},
+        "opened": false,
+        "itemType": {},
+        "tagIndex": 0
+      },
+      "name_": "next"
+    },
+    {
+      "attributes": {
+        "suffix": "💤"
+      },
+      "opened": false,
+      "enable": true,
+      "tagDetail": {
+        "attributes": {},
+        "opened": false,
+        "itemType": {},
+        "tagIndex": 1
+      },
+      "name_": "waiting"
+    },
+    {
+      "attributes": {
+        "suffix": "👷"
+      },
+      "opened": false,
+      "enable": true,
+      "tagDetail": {
+        "attributes": {},
+        "opened": false,
+        "itemType": {},
+        "tagIndex": 2
+      },
+      "name_": "delegated"
+    },
+    {
+      "attributes": {
+        "suffix": "🎌"
+      },
+      "opened": false,
+      "enable": true,
+      "tagDetail": {
+        "attributes": {},
+        "opened": false,
+        "itemType": {},
+        "tagIndex": 3
+      },
+      "name_": "manga"
+    },
+    {
+      "attributes": {
+        "suffix": "📖"
+      },
+      "opened": false,
+      "enable": true,
+      "tagDetail": {
+        "attributes": {},
+        "opened": false,
+        "itemType": {},
+        "tagIndex": 4
+      },
+      "name_": "book"
+    },
+    {
+      "attributes": {
+        "suffix": "🛋️"
+      },
+      "opened": false,
+      "enable": true,
+      "tagDetail": {
+        "attributes": {},
+        "opened": false,
+        "itemType": {},
+        "tagIndex": 5
+      },
+      "name_": "show"
+    },
+    {
+      "attributes": {
+        "suffix": "🍿"
+      },
+      "opened": false,
+      "enable": true,
+      "tagDetail": {
+        "attributes": {},
+        "opened": false,
+        "itemType": {},
+        "tagIndex": 6
+      },
+      "name_": "movie"
+    },
+    {
+      "attributes": {
+        "suffix": "🎮"
+      },
+      "opened": false,
+      "enable": true,
+      "tagDetail": {
+        "attributes": {},
+        "opened": false,
+        "itemType": {},
+        "tagIndex": 7
+      },
+      "name_": "game"
+    },
+    {
+      "attributes": {
+        "suffix": "🏗️"
+      },
+      "opened": false,
+      "enable": true,
+      "tagDetail": {
+        "attributes": {},
+        "opened": false,
+        "itemType": {},
+        "tagIndex": 8
+      },
+      "name_": "ongoing"
+    }
+  ],
+  "GlobalTagSetting": {
+    "attributes": {},
+    "opened": false,
+    "enableList_": {}
+  },
+  "UseTagDetail": false,
+  "StoreTagDetailInYaml": "plugin",
+  "TagDetailData": {
+    "2-Areas/Sport.md": [],
+    "Media Backlog 🎮.md": []
+  },
+  "MetaFileTagDetails": {
+    "-Daily-Notes/2023-07-31.md": [
+      "#next-47-81-1508",
+      "#transport-47-87-1514",
+      "#next-48-76-1614",
+      "#computer-48-82-1620"
+    ],
+    "0-Inbox/Getting Vaccinated.md": [
+      "#next-14-37-200",
+      "#phone-14-43-206"
+    ],
+    "0-Inbox/Learn How to Budget.md": [
+      "#next-14-142-307",
+      "#online-14-148-313",
+      "#waiting-15-60-407"
+    ],
+    "2-Areas/Sport.md": [
+      "#skill-18-40-219",
+      "#skill-19-31-270",
+      "#core-19-38-277",
+      "#strength-23-33-349",
+      "#pulling-23-43-359",
+      "#vertical-23-52-368",
+      "#strength-24-29-420",
+      "#pulling-24-39-430",
+      "#horizontal-24-48-439",
+      "#strength-28-33-517",
+      "#pushing-28-43-527",
+      "#horizontal-28-52-536",
+      "#strength-29-29-590",
+      "#pushing-29-39-600",
+      "#vertical-29-48-609",
+      "#strength-33-39-688",
+      "#legs-33-49-698",
+      "#strength-37-32-766",
+      "#core-37-43-777",
+      "#flexibility-43-36-960"
+    ],
+    "1-Projects/Getting Vaccinated.md": [
+      "14-37-200",
+      "14-43-206"
+    ],
+    "0-Inbox/Get a Refund for Our Faulty Car Engine.md": [
+      "#delegated-14-61-264"
+    ],
+    "Media Backlog 🎮.md": [
+      "#game-8-18-63",
+      "#movie-9-24-93",
+      "#game-14-27-142",
+      "#game-15-24-172",
+      "#game-20-28-220",
+      "#game-21-17-243",
+      "#book-26-80-340",
+      "#show-31-20-382",
+      "#ongoing-31-26-388",
+      "#book-32-33-430",
+      "#book-37-100-547",
+      "#book-38-32-599",
+      "#game-44-19-689",
+      "#game-49-20-732"
+    ],
+    "1-Projects/Learn How to Budget.md": [
+      "#next-15-142-360",
+      "#online-15-148-366",
+      "#waiting-16-60-460"
+    ],
+    "_Sources/2023-07-31/Sorting - Tasks User Guide - Obsidian Publish.md": [
+      "#Omnivore-12-0-253"
+    ],
+    "_Sources/2023-07-31/Filters - Tasks User Guide - Obsidian Publish.md": [
+      "#Omnivore-13-0-289"
+    ],
+    "_Sources/2023-07-31/Grouping - Tasks User Guide - Obsidian Publish.md": [
+      "#Omnivore-13-0-286"
+    ]
+  }
+}

@@ -1,0 +1,102 @@
+.archiver-settings textarea {
+    resize: none;
+}
+
+.archiver-settings .setting-item:only-child {
+    padding: 0;
+}
+
+.archiver-setting-sub-item {
+    padding: 0.75em 0 0.75em 2em;
+}
+
+.archiver-placeholders-description {
+    vertical-align: top;
+}
+
+.archiver-rule-container {
+    padding-right: 10px;
+    padding-left: 10px;
+    border: 2px solid var(--interactive-accent);
+    border-radius: 10px;
+}
+
+.archiver-status-examples {
+    list-style: none;
+}
+
+.archiver-accordion {
+    width: 100%;
+    border: 2px solid var(--background-modifier-border);
+}
+
+.archiver-accordion:last-child {
+    margin-bottom: 0;
+}
+
+.archiver-panel {
+    display: none;
+    padding-top: 0.75em;
+    transition: max-height 0.2s ease-out;
+}
+
+.archiver-active {
+    display: block;
+}
+
+.archiver-rule-paths {
+    width: 300px;
+    height: 100px;
+}
+
+.archiver-setting-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+
+    padding-bottom: 0.75em;
+
+    border-top: 1px solid var(--background-modifier-border);
+    border-left: 4px solid var(--color-base-30);
+}
+
+.archiver-setting-group:has(+ h2),
+.archiver-setting-group:last-child {
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.archiver-setting-group:nth-child(even) {
+    border-left: 4px solid var(--color-base-50);
+}
+
+.archiver-setting-group:has(> button:only-child) {
+    padding-bottom: 0;
+}
+
+.archiver-setting-group > * {
+    padding-left: 1em;
+}
+
+.archiver-setting-group > *:first-child {
+    padding-top: 0.75em;
+}
+
+.archiver-setting-group > .header {
+    all: unset;
+
+    display: flex;
+    gap: 0.25em;
+    align-items: center;
+
+    padding: 0.75em;
+}
+
+.archiver-setting-group > .header:hover {
+    background-color: var(--background-modifier-hover);
+    transition: background-color 0.15s ease-in-out;
+}
+
+.archiver-setting-group > .header .callout-fold {
+    display: flex;
+    align-items: center;
+}

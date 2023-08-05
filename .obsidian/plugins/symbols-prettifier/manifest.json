@@ -1,0 +1,10 @@
+{
+	"id": "symbols-prettifier",
+	"name": "Symbols Prettifier",
+	"version": "1.1.1",
+	"minAppVersion": "0.9.12",
+	"description": "This plugin allows you to prettify the symbols with actual symbols you commonly type, like arrows.",
+	"author": "Florian Woelki",
+	"authorUrl": "https://florianwoelki.com",
+	"isDesktopOnly": false
+}

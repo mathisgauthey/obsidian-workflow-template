@@ -1,0 +1,21 @@
+details.bwc-sb-item-setting {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 10px;
+  padding: 10px 5px 20px 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+.bwc-sb-item-setting summary::marker {
+  font-size: 10px;
+}
+
+/* .bwc-sb-item-setting summary { */
+/*   margin-bottom: 5px; */
+/* } */
+.bwc-sb-item-setting summary span.bwc-sb-buttons {
+  float: right;
+}
+
+.bwc-status-bar-settings-title {
+  margin-bottom: 0px;
+}

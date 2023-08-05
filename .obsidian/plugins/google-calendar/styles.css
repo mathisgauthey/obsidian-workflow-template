@@ -1,0 +1,50 @@
+#calendar-container .today {
+	font-weight: bold;
+	color: red;
+}
+
+input[type='date'],
+input[type='datetime-local'] {
+	background: var(--background-modifier-form-field);
+	border: 1px solid var(--background-modifier-border);
+	color: var(--text-normal);
+	font-family: inherit;
+	padding: 5px 14px;
+	font-size: 16px;
+	border-radius: 4px;
+	outline: none;
+	height: 30px;
+}
+
+.googleEventDetails {
+	display: flex;
+	flex-direction: column;
+}
+
+.SubSettings {
+	margin-left: 40px;
+}
+
+.suggestionText {
+	font-size: 20px;
+}
+
+.templater_search {
+	width: calc(100% - 20px);
+}
+
+.googleCalendarDailyDot {
+	fill: var(--daily-dot-color) !important;
+}
+
+.block-language-gEvent {
+	padding: 0px;
+}
+
+.setting .multiselect .options  {
+	background-color: #262626 !important;
+}
+
+.rangeSettings .rangeSlider {
+	width: 300px;
+}

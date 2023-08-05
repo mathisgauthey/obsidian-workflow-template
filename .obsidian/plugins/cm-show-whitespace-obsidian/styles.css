@@ -1,0 +1,123 @@
+@charset "UTF-8";
+.plugin-cm-show-whitespace-settings .plugin-cm-show-whitespace-disabled {
+  opacity: 0.6;
+}
+.plugin-cm-show-whitespace-settings .plugin-cm-show-whitespace-disabled .checkbox-container {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+body.plugin-cm-show-whitespace {
+  /* feel free to override these characters if you want */
+  --spaceChar: "·";
+  --trailingSpaceChar: "·";
+  --singleSpaceChar: var(--spaceChar);
+  --tabChar: "→";
+  --newlineChar: "¬";
+  --strictLineBreakChar: var(--newlineChar);
+}
+body.plugin-cm-show-whitespace.plugin-cm-show-whitespace-hide-space {
+  --spaceChar: "";
+}
+body.plugin-cm-show-whitespace.plugin-cm-show-whitespace-hide-tab {
+  --tabChar: "";
+}
+body.plugin-cm-show-whitespace.plugin-cm-show-whitespace-hide-newline {
+  --newlineChar: "";
+}
+body.plugin-cm-show-whitespace.plugin-cm-show-whitespace-hide-single-space {
+  --singleSpaceChar: "";
+}
+body.plugin-cm-show-whitespace.plugin-cm-show-whitespace-hide-trailing-space {
+  --trailingSpaceChar: "";
+}
+body.plugin-cm-show-whitespace.plugin-cm-show-whitespace-show-strict-line-break {
+  --strictLineBreakChar: "↲";
+}
+body.plugin-cm-show-whitespace .cm-whitespace::before,
+body.plugin-cm-show-whitespace .cm-tab::before,
+body.plugin-cm-show-whitespace .CodeMirror-code > div > pre > span > :last-child:after,
+body.plugin-cm-show-whitespace .CodeMirror-line > span > :last-child::after,
+body.plugin-cm-show-whitespace [class*=cm-trailing-space] + [class*=cm-trailing-space]:last-child::after {
+  pointer-events: none;
+  color: var(--text-faint);
+  font-weight: normal;
+  opacity: 0.5;
+}
+body.plugin-cm-show-whitespace [class*=cm-trailing-space]::before {
+  content: var(--trailingSpaceChar);
+}
+body.plugin-cm-show-whitespace .cm-tab::before {
+  content: var(--tabChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror-code > div > pre > span > :last-child:after,
+body.plugin-cm-show-whitespace .CodeMirror-line > span > :last-child::after {
+  content: var(--newlineChar);
+  position: unset;
+}
+body.plugin-cm-show-whitespace [class*=cm-trailing-space] + [class*=cm-trailing-space]:last-child::after {
+  content: var(--strictLineBreakChar);
+  position: unset;
+}
+body.plugin-cm-show-whitespace .cm-whitespace::before,
+body.plugin-cm-show-whitespace .cm-tab::before {
+  position: absolute;
+}
+body.plugin-cm-show-whitespace .cm-s-obsidian span.cm-inline-code.cm-whitespace::before {
+  line-height: 2em;
+}
+body.plugin-cm-show-whitespace .CodeMirror-code > div:last-child > pre > span::after,
+body.plugin-cm-show-whitespace .CodeMirror-code > pre:last-child > span::after {
+  display: none;
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-1:not([class*=cm-trailing-space-])::before {
+  content: var(--singleSpaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-2:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-3:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-4:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-5:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-6:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-7:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-8:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-9:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-10:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-11:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-12:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-13:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-14:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-15:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-16:not([class*=cm-trailing-space-])::before {
+  content: var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar) var(--spaceChar);
+}
+body.plugin-cm-show-whitespace .CodeMirror .cm-whitespace-1:last-of-type::before {
+  content: var(--trailingSpaceChar);
+}

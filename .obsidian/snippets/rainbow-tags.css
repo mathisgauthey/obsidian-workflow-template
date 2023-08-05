@@ -1,0 +1,198 @@
+/* ——————————————————————————————————————————— ╗
+                 STYLE SETTINGS
+╚ ——————————————————————————————————————————— */
+/* @settings
+
+name: Rainbow Tags by raisabelatrix
+id: rb-tags-rsbltrx
+settings:
+    -
+        id: rainbow-tags
+        title: Rainbow Tags
+        description: Tags on the same line will alternate colors. Does not include tags on frontmatter.
+        type: class-toggle
+        default: true
+    -
+        id: r1-color
+        title: 1st Color Text
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #e07a7a
+    -
+        id: r1-color-light
+        title: 1st Color Background
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #ffe1e1
+    -
+        id: r2-color
+        title: 2nd Color Text
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #e99b27
+    -
+        id: r2-color-light
+        title: 2nd Color Background
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #ffe9d0
+    -
+        id: r3-color
+        title: 3rd Color Text
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #e4bc16
+    -
+        id: r3-color-light
+        title: 3rd Color Background
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #fff4ca
+    -
+        id: r4-color
+        title: 4th Color Text
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #92a33e
+    -
+        id: r4-color-light
+        title: 4th Color Background
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #ebf3c2
+    -
+        id: r5-color
+        title: 5th Color Text
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #5e98c7
+    -
+        id: r5-color-light
+        title: 5th Color Background
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #e3f0fa
+    -
+        id: r6-color
+        title: 6th Color Text
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #a177c4
+    -
+        id: r6-color-light
+        title: 6th Color Background
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #eedcfc
+    -
+        id: r7-color
+        title: 7th Color Text
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #ca30b0
+    -
+        id: r7-color-light
+        title: 7th Color Background
+        type: variable-color
+        opacity: false
+        format: hex
+        default: #ffd9f9
+*/
+
+
+.rainbow-tags {
+    --r1-color: #e07a7a;
+    --r2-color: #e99b27;
+    --r3-color: #e4bc16;
+    --r4-color: #92a33e;
+    --r5-color: #5e98c7;
+    --r6-color: #a177c4;
+    --r7-color: #ca30b0;
+
+    --r1-color-light: #ffe1e1;
+    --r2-color-light: #ffe9d0;
+    --r3-color-light: #fff4ca;
+    --r4-color-light: #ebf3c2;
+    --r5-color-light: #e3f0fa;
+    --r6-color-light: #eedcfc;
+    --r7-color-light: #ffd9f9;
+}
+
+/*END STYLE SETTINGS*/
+
+
+
+.rainbow-tags :is(a.tag,.cm-hashtag) {
+    font-weight: bold;
+}
+.rainbow-tags a.tag {
+    -webkit-box-decoration-break: clone;
+    display: inline-block;
+}
+.rainbow-tags a.tag:hover,
+.rainbow-tags a.tag:focus {
+    transform: translateY(-.25em);
+}
+
+.rainbow-tags p > a.tag:nth-child(7n+1), /*reading mode*/
+.rainbow-tags :is(.cm-hashtag:nth-child(14n+1), /*live preview*/
+.cm-hashtag:nth-child(14n+2)) {
+    color: var(--r1-color);
+    background-color: var(--r1-color-light);
+}
+
+.rainbow-tags p > a.tag:nth-child(7n+2),
+.rainbow-tags :is(.cm-hashtag:nth-child(14n+3),
+.cm-hashtag:nth-child(14n+4)) {
+    color: var(--r2-color);
+    background-color: var(--r2-color-light);
+}
+
+.rainbow-tags p > a.tag:nth-child(7n+3),
+.rainbow-tags :is(.cm-hashtag:nth-child(14n+5),
+.cm-hashtag:nth-child(14n+6)) {
+    color: var(--r3-color);
+    background-color: var(--r3-color-light);
+}
+
+.rainbow-tags p > a.tag:nth-child(7n+4),
+.rainbow-tags :is(.cm-hashtag:nth-child(14n+7),
+.cm-hashtag:nth-child(14n+8)) {
+    color: var(--r4-color);
+    background-color: var(--r4-color-light);
+}
+
+.rainbow-tags p > a.tag:nth-child(7n+5),
+.rainbow-tags :is(.cm-hashtag:nth-child(14n+9),
+.cm-hashtag:nth-child(14n+10)) {
+    color: var(--r5-color);
+    background-color: var(--r5-color-light);
+}
+
+.rainbow-tags p > a.tag:nth-child(7n+6),
+.rainbow-tags :is(.cm-hashtag:nth-child(14n+11),
+.cm-hashtag:nth-child(14n+12)) {
+    color: var(--r6-color);
+    background-color: var(--r6-color-light);
+}
+
+.rainbow-tags p > a.tag:nth-child(7n+7),
+.rainbow-tags :is(.cm-hashtag:nth-child(14n+13),
+.cm-hashtag:nth-child(14n+14)) {
+    color: var(--r7-color);
+    background-color: var(--r7-color-light);
+}
+/*end rainbow tags*/

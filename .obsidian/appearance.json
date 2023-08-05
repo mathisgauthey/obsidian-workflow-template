@@ -1,0 +1,10 @@
+{
+  "accentColor": "",
+  "theme": "system",
+  "cssTheme": "AnuPpuccin",
+  "baseFontSize": 16,
+  "enabledCssSnippets": [
+    "extended-colorschemes",
+    "kanban-search"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "archive-date-format": "YYYY-MM-DD",
+  "date-picker-week-start": 1,
+  "hide-tags-in-title": true,
+  "hide-date-in-title": true,
+  "new-card-insertion-method": "append",
+  "archive-with-date": true,
+  "append-archive-date": true,
+  "archive-date-separator": "_",
+  "tag-colors": []
+}

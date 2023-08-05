@@ -1,0 +1,42 @@
+{
+  "settings": {
+    "migrated": true,
+    "iconPacksPath": ".obsidian/icons",
+    "fontSize": 16,
+    "iconColor": null,
+    "recentlyUsedIcons": [
+      "RiZzzLine",
+      "IbDisplayZoom",
+      "RiCalendarCheckLine",
+      "IbSquareAndPencil",
+      "SiGrav"
+    ],
+    "recentlyUsedIconsSize": 5,
+    "rules": [],
+    "extraPadding": {
+      "top": 2,
+      "right": 2,
+      "bottom": 2,
+      "left": 2
+    },
+    "extraMargin": {
+      "top": 0,
+      "right": 4,
+      "bottom": 0,
+      "left": 0
+    },
+    "emojiStyle": "native",
+    "iconInTabsEnabled": false
+  },
+  "0-Inbox": "FasInbox",
+  "_Sources": "RiDocumentBookMarkLine",
+  "_Media": "RiAttachment2",
+  "-Daily-Notes": "IbSquareAndPencil",
+  "-Periodic-Notes": "RiCalendarCheckLine",
+  "1-Projects": "RiCheckboxMultipleLine",
+  "3-Resources": "RiVipDiamondLine",
+  "4-Archives": "IbArchive",
+  "5-Templates": "RiCopyrightLine",
+  "2-Areas": "IbDisplayZoom",
+  "-Workout_Log": "FasDumbbell"
+}

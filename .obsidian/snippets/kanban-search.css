@@ -1,0 +1,10 @@
+.kanban-plugin__lane-items > div {
+    margin-top: 0;
+  }
+  .kanban-plugin__item,
+  .kanban-plugin__placeholder {
+    margin-top: 4px;
+  }
+  .kanban-plugin__item.is-search-miss {
+    display: none;
+  }

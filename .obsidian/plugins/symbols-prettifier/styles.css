@@ -1,0 +1,13 @@
+.symbols-prettifier-important {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	padding: 3px 5px 3px 5px;
+	border-radius: 4px;
+}
+
+.symbols-prettifier-unclear {
+	background-color: var(--background-modifier-error);
+	color: var(--text-on-accent);
+	padding: 3px 5px 3px 5px;
+	border-radius: 4px;
+}

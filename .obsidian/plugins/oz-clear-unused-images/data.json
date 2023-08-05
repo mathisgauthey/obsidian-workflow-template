@@ -1,0 +1,7 @@
+{
+  "deleteOption": ".trash",
+  "logsModal": true,
+  "excludedFolders": "tasksCalendar",
+  "ribbonIcon": false,
+  "excludeSubfolders": false
+}

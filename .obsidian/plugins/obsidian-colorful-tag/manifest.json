@@ -1,0 +1,10 @@
+{
+    "id":"obsidian-colorful-tag",
+    "name":"Colorful Tag",
+    "version":"1.3.2",
+    "minAppVersion":"0.15.0",
+    "description":"Make your tag more beautiful and powerful!",
+    "author":"RieN7",
+    "authorUrl":"https://github.com/rien7",
+    "isDesktopOnly":false
+}

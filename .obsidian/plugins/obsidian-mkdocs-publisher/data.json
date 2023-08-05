@@ -1,0 +1,93 @@
+{
+  "github": {
+    "branch": "main",
+    "automaticallyMergePR": true,
+    "api": {
+      "tiersForApi": "Github Free/Pro/Team (default)",
+      "hostname": ""
+    },
+    "workflow": {
+      "name": "",
+      "commitMessage": "[PUBLISHER] MERGE"
+    },
+    "tokenPath": ".obsidian/plugins/obsidian-mkdocs-publisher/env",
+    "verifiedRepo": true,
+    "repo": "",
+    "user": "",
+    "otherRepo": []
+  },
+  "upload": {
+    "behavior": "fixed",
+    "subFolder": "",
+    "defaultName": "content/post",
+    "rootFolder": "",
+    "yamlFolderKey": "",
+    "frontmatterTitle": {
+      "enable": true,
+      "key": "title"
+    },
+    "replaceTitle": [],
+    "autoclean": {
+      "enable": false,
+      "excluded": [
+        "docs/assets/js",
+        "docs/assets/meta",
+        "docs/assets/css",
+        "tags.md",
+        "graph.md"
+      ]
+    },
+    "folderNote": {
+      "enable": true,
+      "rename": "index.md"
+    },
+    "metadataExtractorPath": "",
+    "replacePath": []
+  },
+  "conversion": {
+    "hardbreak": false,
+    "dataview": false,
+    "censorText": [
+      {
+        "entry": "/!\\[\\[([^[\\]]+)\\]\\]/gi",
+        "replace": "![$1](/images/$1)",
+        "after": false
+      },
+      {
+        "entry": "/\\[\\[([^|\\]]+)\\|([^\\]]+)\\]\\]|\\[\\[([^\\]|]+)\\]\\]/gi",
+        "replace": "[$2$3]({{< ref \"$1$3\" >}})",
+        "after": false
+      }
+    ],
+    "tags": {
+      "inline": false,
+      "exclude": [],
+      "fields": []
+    },
+    "links": {
+      "internal": false,
+      "unshared": false,
+      "wiki": false
+    }
+  },
+  "embed": {
+    "attachments": true,
+    "keySendFile": [],
+    "notes": true,
+    "folder": "content/images"
+  },
+  "plugin": {
+    "shareKey": "share",
+    "fileMenu": true,
+    "editorMenu": true,
+    "excludedFolder": [],
+    "copyLink": {
+      "enable": false,
+      "links": "",
+      "removePart": [],
+      "addCmd": false
+    },
+    "noticeError": false,
+    "displayModalRepoEditing": true
+  }
+}
