@@ -1,5 +1,7 @@
 # README
 
+![image](https://github.com/mathisgauthey/obsidian-workflow-template/assets/46576952/895260c8-e728-4cb6-bdb1-9570809cfa4c)
+
 As I promised to quite a few people on different places, I’m releasing a [full blown guide](https://mathisgauthey.github.io/my-complete-obsidian-workflow-to-manage-my-life/) of my Obsidian workflow. It has many cool features that I’ve seen people struggling with online :
 
 1. Tasks and project management with journaling, workout logging and media tracking. Using daily and periodic notes.
