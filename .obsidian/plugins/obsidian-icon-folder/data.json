@@ -1,15 +1,15 @@
 {
   "settings": {
-    "migrated": true,
+    "migrated": 3,
     "iconPacksPath": ".obsidian/icons",
     "fontSize": 16,
     "iconColor": null,
     "recentlyUsedIcons": [
-      "RiZzzLine",
-      "IbDisplayZoom",
-      "RiCalendarCheckLine",
-      "IbSquareAndPencil",
-      "SiGrav"
+      "🌐",
+      "📝",
+      "💻",
+      "©",
+      "🗃"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -26,17 +26,21 @@
       "left": 0
     },
     "emojiStyle": "native",
-    "iconInTabsEnabled": false
+    "iconInTabsEnabled": false,
+    "iconInTitleEnabled": false,
+    "iconsBackgroundCheckEnabled": false
   },
-  "0-Inbox": "FasInbox",
-  "_Sources": "RiDocumentBookMarkLine",
-  "_Media": "RiAttachment2",
-  "-Daily-Notes": "IbSquareAndPencil",
-  "-Periodic-Notes": "RiCalendarCheckLine",
-  "1-Projects": "RiCheckboxMultipleLine",
-  "3-Resources": "RiVipDiamondLine",
-  "4-Archives": "IbArchive",
-  "5-Templates": "RiCopyrightLine",
-  "2-Areas": "IbDisplayZoom",
-  "-Workout_Log": "FasDumbbell"
+  "0-Inbox": "📥",
+  "_Sources": "📚",
+  "_Media": "📎",
+  "-Daily-Notes": "📆",
+  "-Periodic-Notes": "📅",
+  "1-Projects": "✅",
+  "3-Resources": "📁",
+  "4-Archives": "🗃",
+  "5-Templates": "©",
+  "_Scripts": "💻",
+  "2-Areas": "🔲",
+  "0-Fleeting-Notes": "📝",
+  "_Canvas": "🌐"
 }
