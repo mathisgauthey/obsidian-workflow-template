@@ -62,6 +62,8 @@ tR += rightAngle;
 
 
 
+## Inbox 📥
+
 ```todoist
 name: Inbox
 filter: "#Inbox"
