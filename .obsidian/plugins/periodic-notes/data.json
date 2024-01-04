@@ -5,28 +5,29 @@
   "daily": {
     "folder": "-Daily-Notes",
     "template": "5-Templates/Daily-Notes.md",
-    "enabled": true
+    "enabled": true,
+    "format": "YYYY-MM-DD"
   },
   "weekly": {
-    "format": "",
+    "format": "GGGG-[W]WW",
     "template": "5-Templates/Weekly-Notes.md",
     "folder": "-Periodic-Notes",
     "enabled": true
   },
   "monthly": {
-    "format": "",
+    "format": "YYYY-MM",
     "template": "5-Templates/Monthly-Notes.md",
     "folder": "-Periodic-Notes",
     "enabled": true
   },
   "quarterly": {
-    "format": "",
+    "format": "YYYY-[Q]Q",
     "template": "5-Templates/Quarterly-Notes.md",
     "folder": "-Periodic-Notes",
     "enabled": true
   },
   "yearly": {
-    "format": "",
+    "format": "YYYY",
     "template": "5-Templates/Yearly-Notes.md",
     "folder": "-Periodic-Notes",
     "enabled": true
