@@ -17,8 +17,8 @@ Obviously, it is merely just a starting point, with Obsidian you can (and you al
 ## Core Features
 
 - 🎨 Beautiful design using [AnuPpuccin: Personal theme for Obsidian](https://github.com/AnubisNekhet/anuppuccin).
-- 🗃️ [P.A.R.A](https://fortelabs.com/blog/para/)[^1] folder organisation based on file actionability.
-- ✅ [GTD](https://gettingthingsdone.com/)[^2] task management on par with a [full Todoist setup](https://todoist.com/fr/productivity-methods/getting-things-done), but with a simple and natural way of **writing tasks alongside notes**. You also get to keep your project tasks, notes and files archives when you finish a project, allowing you to access these informations in the future.
+- 🗃️ [P.A.R.A](https://fortelabs.com/blog/para/) folder organisation based on file actionability.
+- ✅ [GTD](https://gettingthingsdone.com/) task management on par with a [full Todoist setup](https://todoist.com/fr/productivity-methods/getting-things-done), but with a simple and natural way of **writing tasks alongside notes**. You also get to keep your project tasks, notes and files archives when you finish a project, allowing you to access these informations in the future.
 - 📅 Daily notes for task management, periodic notes for projects management (week, month, quarter and year).
 - 📓 Journal section for each daily and periodic notes to write about anything that happened during a certain period of time.
 - 💪 Simple workout log for storing your workout sessions but with an infinite possible personalized exercise library.
