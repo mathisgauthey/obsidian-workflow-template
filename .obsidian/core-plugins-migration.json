@@ -7,6 +7,7 @@
   "canvas": true,
   "outgoing-link": true,
   "tag-pane": true,
+  "properties": true,
   "page-preview": true,
   "daily-notes": false,
   "templates": false,
@@ -14,7 +15,7 @@
   "command-palette": true,
   "slash-command": false,
   "editor-status": true,
-  "starred": false,
+  "bookmarks": false,
   "markdown-importer": false,
   "zk-prefixer": false,
   "random-note": false,
@@ -26,5 +27,5 @@
   "file-recovery": false,
   "publish": false,
   "sync": true,
-  "bookmarks": false
+  "starred": false
 }
