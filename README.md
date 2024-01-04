@@ -21,7 +21,6 @@ Obviously, it is merely just a starting point, with Obsidian you can (and you al
 - ✅ [GTD](https://gettingthingsdone.com/) task management on par with a [full Todoist setup](https://todoist.com/fr/productivity-methods/getting-things-done), but with a simple and natural way of **writing tasks alongside notes**. You also get to keep your project tasks, notes and files archives when you finish a project, allowing you to access these informations in the future.
 - 📅 Daily notes for task management, periodic notes for projects management (week, month, quarter and year).
 - 📓 Journal section for each daily and periodic notes to write about anything that happened during a certain period of time.
-- 💪 Simple workout log for storing your workout sessions but with an infinite possible personalized exercise library.
 - 🎮 Media backlog Kanban board for tracking books, shows, movies or video games backlog, consuming media at the right pace, and archiving what you do. All without proprietary online services that hold you data.
 - 🔗 Read-it-later / bookmark manager with automated markdown conversion for offline storage inside your vault using [Omnivore app](https://omnivore.app/). That means easy search for knowledge inside your vault across sources and personal notes.
 - 📝 [Zettelkasten note-taking](https://everlaab.com/methode-zettelkasten-comment-prendre-des-notes-utiles/) on a flat structure inside `3-Resources` folder.
