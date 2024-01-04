@@ -1,7 +1,7 @@
 {
   "deleteOption": ".trash",
   "logsModal": true,
-  "excludedFolders": "tasksCalendar",
+  "excludedFolders": "_Scripts",
   "ribbonIcon": false,
   "excludeSubfolders": false
 }

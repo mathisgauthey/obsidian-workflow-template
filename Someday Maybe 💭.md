@@ -1,12 +1,19 @@
 ---
 title: Someday Maybe 💭
-date created: 2023-05-04 10:31:12
-date modified: 2023-07-10 12:54:45
-tags: 
-aliases: 
+date: 2023-05-04 09:31:12
+lastmod: 2024-01-03 17:57:47
+categories:
+  -
+tags:
+  -
+aliases:
+share: false
 ---
 
 # Someday Maybe 💭
 
-- Make a real documentation of my Obsidian vault and not just some huge blog post
-- Become an artist and draw beautiful landscapes
+## Inbox
+
+## Area 1
+
+## Area 2

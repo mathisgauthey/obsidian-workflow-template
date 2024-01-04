@@ -1,0 +1,10 @@
+{
+	"id": "callout-manager",
+	"version": "1.0.1",
+	"description": "An Obsidian.md plugin that makes creating and configuring callouts easy.",
+	"author": "eth-p",
+	"authorUrl": "https://github.com/eth-p",
+	"name": "Callout Manager",
+	"minAppVersion": "1.0.0",
+	"isDesktopOnly": false
+}

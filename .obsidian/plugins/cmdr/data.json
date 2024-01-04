@@ -1,10 +1,23 @@
 {
-  "confirmDeletion": true,
+  "confirmDeletion": false,
   "showAddCommand": true,
   "debug": false,
   "editorMenu": [],
   "fileMenu": [],
-  "leftRibbon": [],
+  "leftRibbon": [
+    {
+      "id": "quickadd:choice:70c319ad-181f-41a1-8b99-f5e66d75f768",
+      "icon": "bot",
+      "name": "Import from Todoist",
+      "mode": "any"
+    },
+    {
+      "id": "quickadd:choice:dad7b11b-b288-4838-81b7-680152ca1766",
+      "icon": "bookmark-plus",
+      "name": "Create Something",
+      "mode": "any"
+    }
+  ],
   "rightRibbon": [],
   "titleBar": [],
   "statusBar": [],
@@ -18,11 +31,16 @@
   "spacing": 8,
   "advancedToolbar": {
     "rowHeight": 48,
-    "rowCount": 2,
+    "rowCount": 3,
     "spacing": 0,
     "buttonWidth": 48,
     "columnLayout": true,
-    "mappedIcons": [],
+    "mappedIcons": [
+      {
+        "commandID": "shortcuts-extender:shortcut-code-block",
+        "iconID": "file-code"
+      }
+    ],
     "tooltips": false,
     "heightOffset": 0
   }

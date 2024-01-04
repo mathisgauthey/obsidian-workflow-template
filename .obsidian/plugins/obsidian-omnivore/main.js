@@ -10910,6 +10910,7 @@ var loadArticles = async (endpoint, apiKey, after = 0, first = 10, updatedAt = "
                   isArchived
                   readingProgressPercent
                   archivedAt
+                  contentReader
                   highlights {
                     id
                     quote
@@ -10918,9 +10919,11 @@ var loadArticles = async (endpoint, apiKey, after = 0, first = 10, updatedAt = "
                     updatedAt
                     type
                     highlightPositionPercent
+                    highlightPositionAnchorIndex
                     labels {
                       name
                     }
+                    color
                   }
                   labels {
                     name
@@ -12384,19 +12387,33 @@ function upperCaseFirst() {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
 }
+function formatDateFunc() {
+  return function(text, render3) {
+    const [dateVariable, format] = text.split(",", 2);
+    const date = render3(dateVariable);
+    if (!date) {
+      return "";
+    }
+    return formatDate(date, format);
+  };
+}
 var functionMap = {
   lowerCase,
   upperCase,
-  upperCaseFirst
+  upperCaseFirst,
+  formatDate: formatDateFunc
 };
 var renderFilename = (article, filename, dateFormat) => {
+  var _a;
   const date = formatDate(article.savedAt, dateFormat);
   const datePublished = article.publishedAt ? formatDate(article.publishedAt, dateFormat).trim() : void 0;
   const renderedFilename = mustache_default.render(filename, {
     title: article.title,
+    author: (_a = article.author) != null ? _a : "unknown-author",
     date,
     dateSaved: date,
-    datePublished
+    datePublished,
+    id: article.id
   });
   return (0, import_lodash.truncate)(renderedFilename, {
     length: 100
@@ -12424,14 +12441,17 @@ var renderArticleContnet = async (article, template, highlightOrder, dateHighlig
     });
   }
   const highlights = articleHighlights.map((highlight) => {
-    var _a2;
+    var _a2, _b2;
     return {
       text: formatHighlightQuote(highlight.quote, template),
       highlightUrl: `https://omnivore.app/me/${article.slug}#${highlight.id}`,
       highlightID: highlight.id.slice(0, 8),
       dateHighlighted: formatDate(highlight.updatedAt, dateHighlightedFormat),
       note: (_a2 = highlight.annotation) != null ? _a2 : void 0,
-      labels: renderLabels(highlight.labels)
+      labels: renderLabels(highlight.labels),
+      color: (_b2 = highlight.color) != null ? _b2 : "yellow",
+      positionPercent: highlight.highlightPositionPercent,
+      positionAnchorIndex: highlight.highlightPositionAnchorIndex + 1
     };
   });
   const dateSaved = formatDate(article.savedAt, dateSavedFormat);
@@ -12452,7 +12472,7 @@ var renderArticleContnet = async (article, template, highlightOrder, dateHighlig
     labels: renderLabels(article.labels),
     dateSaved,
     highlights,
-    content: article.content,
+    content: article.contentReader === "WEB" ? article.content : void 0,
     datePublished,
     fileAttachment,
     description: article.description,
@@ -12517,12 +12537,14 @@ ${frontMatterYaml}---`;
 ${contentWithoutFrontMatter}`;
 };
 var renderFolderName = (article, template, dateFormat) => {
+  var _a;
   const date = formatDate(article.savedAt, dateFormat);
   const datePublished = article.publishedAt ? formatDate(article.publishedAt, dateFormat).trim() : void 0;
   return mustache_default.render(template, {
     date,
     dateSaved: date,
-    datePublished
+    datePublished,
+    author: (_a = article.author) != null ? _a : "unknown-author"
   });
 };
 var preParseTemplate = (template) => {
@@ -14200,11 +14222,7 @@ var OmnivorePlugin = class extends import_obsidian6.Plugin {
       }
     });
     const iconId = "Omnivore";
-    (0, import_obsidian6.addIcon)(iconId, `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 21 21" version="1.1">
-    <g id="surface1">
-    <path style=" stroke:none;fill-rule:evenodd;fill:rgb(63.137255%,62.352941%,61.176471%);fill-opacity:1;" d="M 9.839844 0.0234375 C 15.9375 -0.382812 21.058594 4.171875 21.140625 10.269531 C 21.140625 10.921875 20.976562 11.734375 20.816406 12.464844 C 20.410156 14.253906 18.785156 15.472656 16.992188 15.472656 L 16.914062 15.472656 C 14.71875 15.472656 13.253906 13.601562 13.253906 11.566406 L 13.253906 9.292969 L 11.953125 11.242188 L 11.871094 11.324219 C 11.140625 11.972656 10.082031 11.972656 9.351562 11.324219 L 9.1875 11.242188 L 7.808594 9.210938 L 7.808594 14.496094 L 5.9375 14.496094 L 5.9375 8.15625 C 5.9375 6.855469 7.484375 6.042969 8.539062 7.015625 L 8.621094 7.097656 L 10.488281 9.859375 L 12.441406 7.179688 L 12.519531 7.097656 C 13.496094 6.285156 15.121094 6.933594 15.121094 8.316406 L 15.121094 11.570312 C 15.121094 12.789062 15.851562 13.601562 16.910156 13.601562 L 16.992188 13.601562 C 17.964844 13.601562 18.777344 12.953125 19.023438 12.058594 C 19.183594 11.328125 19.265625 10.757812 19.265625 10.269531 C 19.265625 5.308594 15.039062 1.570312 10 1.898438 C 5.6875 2.140625 2.195312 5.636719 1.871094 9.863281 C 1.542969 14.90625 5.53125 19.132812 10.488281 19.132812 L 10.488281 21 C 4.390625 21 -0.410156 15.878906 -0.00390625 9.78125 C 0.40625 4.578125 4.554688 0.351562 9.839844 0.0234375 Z M 9.839844 0.0234375 "/>
-    </g>
-    </svg>`);
+    (0, import_obsidian6.addIcon)(iconId, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="currentColor" d="M15.9 7.801c0 .507-.123 1.12-.248 1.656v.004l-.001.003a2.87 2.87 0 0 1-2.793 2.186h-.036c-1.625 0-2.649-1.334-2.649-2.828v-2.14l-1.21 1.794-.067.055a1.404 1.404 0 0 1-1.793 0l-.065-.053-1.248-1.82v4.414H4.6V6.268c0-.91 1.078-1.439 1.794-.802l.055.048 1.46 2.13a.21.21 0 0 0 .179 0l1.43-2.119.065-.054c.68-.567 1.78-.138 1.78.815v2.536c0 .971.619 1.638 1.46 1.638h.035c.78 0 1.45-.527 1.636-1.277.125-.534.216-1.026.216-1.378-.017-3.835-3.262-6.762-7.188-6.498-3.311.23-5.986 2.905-6.216 6.216A6.705 6.705 0 0 0 8 14.693v1.19a7.895 7.895 0 0 1-7.882-8.44C.39 3.536 3.536.39 7.44.118 12.017-.19 15.88 3.242 15.9 7.8z"/></svg>`);
     this.addRibbonIcon(iconId, iconId, async (evt) => {
       await this.fetchOmnivore();
     });
@@ -14356,7 +14374,15 @@ ${newContentWithoutFrontMatter}`);
             });
             continue;
           }
-          await this.app.vault.create(normalizedPath, content);
+          try {
+            await this.app.vault.create(normalizedPath, content);
+          } catch (error) {
+            if (error.toString().includes("File already exists")) {
+              new import_obsidian6.Notice(`Skipping file creation: ${normalizedPath}. Please check if you have duplicated article titles and delete the file if needed.`);
+            } else {
+              throw error;
+            }
+          }
         }
       }
       manualSync && new import_obsidian6.Notice("\u{1F516} Articles fetched");
@@ -14422,9 +14448,9 @@ var OmnivoreSettingTab = class extends import_obsidian6.PluginSettingTab {
     });
     new import_obsidian6.Setting(containerEl).setName("Custom query").setDesc(createFragment((fragment) => {
       fragment.append("See ", fragment.createEl("a", {
-        text: "https://omnivore.app/help/search",
-        href: "https://omnivore.app/help/search"
-      }), " for more info on search query syntax");
+        text: "https://docs.omnivore.app/using/search",
+        href: "https://docs.omnivore.app/using/search"
+      }), " for more info on search query syntax. Make sure your Filter (in the section above) is set to advanced when using a custom query.");
     })).addText((text) => text.setPlaceholder("Enter an Omnivore custom search query if advanced filter is selected").setValue(this.plugin.settings.customQuery).onChange(async (value) => {
       this.plugin.settings.customQuery = value;
       await this.plugin.saveSettings();
@@ -14501,7 +14527,7 @@ var OmnivoreSettingTab = class extends import_obsidian6.PluginSettingTab {
       this.plugin.settings.isSingleFile = value;
       await this.plugin.saveSettings();
     }));
-    new import_obsidian6.Setting(containerEl).setName("Filename").setDesc("Enter the filename where the data will be stored. {{{title}}}, {{{dateSaved}}} and {{{datePublished}}} could be used in the filename").addText((text) => text.setPlaceholder("Enter the filename").setValue(this.plugin.settings.filename).onChange(async (value) => {
+    new import_obsidian6.Setting(containerEl).setName("Filename").setDesc("Enter the filename where the data will be stored. {{id}}, {{{title}}}, {{{dateSaved}}} and {{{datePublished}}} could be used in the filename").addText((text) => text.setPlaceholder("Enter the filename").setValue(this.plugin.settings.filename).onChange(async (value) => {
       this.plugin.settings.filename = value;
       await this.plugin.saveSettings();
     }));

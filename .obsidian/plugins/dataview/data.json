@@ -1,7 +1,7 @@
 {
   "renderNullAs": "\\-",
-  "taskCompletionTracking": false,
-  "taskCompletionUseEmojiShorthand": false,
+  "taskCompletionTracking": true,
+  "taskCompletionUseEmojiShorthand": true,
   "taskCompletionText": "completion",
   "taskCompletionDateFormat": "yyyy-MM-dd",
   "recursiveSubTaskCompletion": false,
@@ -15,12 +15,13 @@
   "tableGroupColumnName": "Group",
   "showResultCount": true,
   "allowHtml": true,
-  "inlineQueryPrefix": "=",
+  "inlineQueryPrefix": "²=",
   "inlineJsQueryPrefix": "$=",
   "inlineQueriesInCodeblocks": true,
   "enableInlineDataview": true,
   "enableDataviewJs": true,
   "enableInlineDataviewJs": true,
   "prettyRenderInlineFields": true,
+  "prettyRenderInlineFieldsInLivePreview": true,
   "dataviewJsKeyword": "dataviewjs"
 }

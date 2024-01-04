@@ -1,0 +1,33 @@
+/*
+Display sync icon on mobile while drawer is closed.
+
+Numbers may need to be tweaked for each device.
+
+Original version kindly provided by sailKite. "no warranties for damages, this is gonna be scuffed" https://discord.com/channels/686053708261228577/702656734631821413/1078468316592615514
+*/
+
+:is(.is-mobile, .is-phone) .workspace:not(:has(.workspace-drawer-backdrop)) .workspace-drawer.mod-right {
+    display: flex !important;
+    overflow: visible;
+    left: 100%;
+}
+:is(.is-mobile, .is-phone) .workspace:not(:has(.workspace-drawer-backdrop)) .workspace-drawer.mod-right .workspace-drawer-inner {
+    overflow: visible;
+}
+:is(.is-mobile) .workspace:not(:has(.workspace-drawer-backdrop)) .sync-status-icon {
+    position: absolute;
+    left: calc(-1 * 52px); /*74*/
+    top: 52px;
+}
+:is(.is-phone) .workspace:not(:has(.workspace-drawer-backdrop)) .sync-status-icon {
+	  left: calc(-1 * 46px); /*74*/
+    top: 12px;
+}
+
+/* Move 3-dot menu to make room for Sync icon. (Courtesy of jijo https://forum.obsidian.md/t/feature-make-sync-icon-always-visible/31780/12) */
+:is(.is-mobile) .workspace:not(:has(.workspace-drawer-backdrop)) .view-actions {
+  padding-right: 32px;
+}
+:is(.is-phone) .workspace:not(:has(.workspace-drawer-backdrop)) .view-actions {
+  padding-right: 23px;
+}

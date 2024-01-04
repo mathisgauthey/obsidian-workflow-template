@@ -6,15 +6,16 @@
       "tiersForApi": "Github Free/Pro/Team (default)",
       "hostname": ""
     },
+    "otherRepo": [],
     "workflow": {
       "name": "",
       "commitMessage": "[PUBLISHER] MERGE"
     },
     "tokenPath": ".obsidian/plugins/obsidian-mkdocs-publisher/env",
-    "verifiedRepo": true,
     "repo": "",
     "user": "",
-    "otherRepo": []
+    "rateLimit": 4985,
+    "verifiedRepo": true
   },
   "upload": {
     "behavior": "fixed",
@@ -88,6 +89,7 @@
       "addCmd": false
     },
     "noticeError": false,
-    "displayModalRepoEditing": true
+    "displayModalRepoEditing": true,
+    "migrated": true
   }
 }

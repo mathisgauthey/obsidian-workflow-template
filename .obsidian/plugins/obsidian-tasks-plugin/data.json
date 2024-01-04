@@ -1,12 +1,13 @@
 {
-  "globalQuery": "path does not include Archives\npath does not include Templates\npath does not include Workout_Log\npath does not include Media Backlog\npath does not include _Sources",
+  "globalQuery": "path does not include _Sources\npath does not include 4-Archives\npath does not include 5-Templates",
   "globalFilter": "",
   "removeGlobalFilter": true,
   "taskFormat": "tasksPluginEmoji",
   "setCreatedDate": true,
   "setDoneDate": true,
+  "setCancelledDate": true,
   "autoSuggestInEditor": true,
-  "autoSuggestMinMatch": 0,
+  "autoSuggestMinMatch": 1,
   "autoSuggestMaxItems": 6,
   "provideAccessKeys": true,
   "useFilenameAsScheduledDate": false,
@@ -17,7 +18,7 @@
       {
         "symbol": " ",
         "name": "Todo",
-        "nextStatusSymbol": "x",
+        "nextStatusSymbol": "/",
         "availableAsCommand": true,
         "type": "TODO"
       },
@@ -43,6 +44,13 @@
         "nextStatusSymbol": " ",
         "availableAsCommand": true,
         "type": "CANCELLED"
+      },
+      {
+        "symbol": "?",
+        "name": "On Hold",
+        "nextStatusSymbol": " ",
+        "availableAsCommand": false,
+        "type": "NON_TASK"
       }
     ]
   },
@@ -57,5 +65,16 @@
   "debugSettings": {
     "ignoreSortInstructions": false,
     "showTaskHiddenData": false
+  },
+  "loggingOptions": {
+    "minLevels": {
+      "": "info",
+      "tasks": "info",
+      "tasks.Cache": "info",
+      "tasks.Events": "info",
+      "tasks.File": "info",
+      "tasks.Query": "info",
+      "tasks.Task": "info"
+    }
   }
 }
