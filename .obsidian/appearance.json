@@ -5,6 +5,8 @@
   "baseFontSize": 16,
   "enabledCssSnippets": [
     "extended-colorschemes",
-    "kanban-search"
+    "kanban-search",
+    "sync-icon",
+    "amoled-theme-code-snippet-fix"
   ]
 }
