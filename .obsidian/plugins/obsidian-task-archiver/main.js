@@ -7,7 +7,11 @@ if you want to view the source visit the plugins github repository
 
 var obsidian = require('obsidian');
 
-/*! *****************************************************************************
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var obsidian__default = /*#__PURE__*/_interopDefaultLegacy(obsidian);
+
+/******************************************************************************
 Copyright (c) Microsoft Corporation.
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -31,6 +35,11 @@ function __awaiter(thisArg, _arguments, P, generator) {
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 }
+
+typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
 
 class EditorFile {
     constructor(editor) {
@@ -81,6 +90,16 @@ const placeholders = {
     OBSIDIAN_TASKS_COMPLETED_DATE: "{{obsidianTasksCompletedDate}}",
 };
 
+var ArchiveFileType;
+(function (ArchiveFileType) {
+    ArchiveFileType["DAILY"] = "Daily note";
+    ArchiveFileType["CUSTOM"] = "Custom note";
+})(ArchiveFileType || (ArchiveFileType = {}));
+var RuleAction;
+(function (RuleAction) {
+    RuleAction["DELETE"] = "Delete it";
+    RuleAction["MOVE_TO_FILE"] = "Move it to file";
+})(RuleAction || (RuleAction = {}));
 var TaskSortOrder;
 (function (TaskSortOrder) {
     TaskSortOrder["NEWEST_FIRST"] = "Newest first";
@@ -97,6 +116,7 @@ const DEFAULT_SETTINGS = {
     archiveAllCheckedTaskTypes: false,
     archiveHeadingDepth: 1,
     archiveToSeparateFile: false,
+    separateFileType: ArchiveFileType.CUSTOM,
     obsidianTasksCompletedDateFormat: DEFAULT_DATE_FORMAT,
     archiveUnderHeading: true,
     dateFormat: DEFAULT_DATE_FORMAT,
@@ -7595,6 +7615,9 @@ class Section extends MarkdownNode {
     }
     stringify(indentation) {
         const lines = [];
+        if (this.frontMatter) {
+            lines.push(...this.frontMatter);
+        }
         if (this.text) {
             lines.push("#".repeat(this.tokenLevel) + this.text);
         }
@@ -7745,6 +7768,343 @@ function isIndentedLine(line) {
     return STRING_WITH_SPACES_PATTERN.test(line);
 }
 
+const DEFAULT_DAILY_NOTE_FORMAT = "YYYY-MM-DD";
+const DEFAULT_WEEKLY_NOTE_FORMAT = "gggg-[W]ww";
+const DEFAULT_MONTHLY_NOTE_FORMAT = "YYYY-MM";
+const DEFAULT_QUARTERLY_NOTE_FORMAT = "YYYY-[Q]Q";
+const DEFAULT_YEARLY_NOTE_FORMAT = "YYYY";
+
+function shouldUsePeriodicNotesSettings(periodicity) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const periodicNotes = window.app.plugins.getPlugin("periodic-notes");
+    return periodicNotes && periodicNotes.settings?.[periodicity]?.enabled;
+}
+/**
+ * Read the user settings for the `daily-notes` plugin
+ * to keep behavior of creating a new note in-sync.
+ */
+function getDailyNoteSettings() {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { internalPlugins, plugins } = window.app;
+        if (shouldUsePeriodicNotesSettings("daily")) {
+            const { format, folder, template } = plugins.getPlugin("periodic-notes")?.settings?.daily || {};
+            return {
+                format: format || DEFAULT_DAILY_NOTE_FORMAT,
+                folder: folder?.trim() || "",
+                template: template?.trim() || "",
+            };
+        }
+        const { folder, format, template } = internalPlugins.getPluginById("daily-notes")?.instance?.options || {};
+        return {
+            format: format || DEFAULT_DAILY_NOTE_FORMAT,
+            folder: folder?.trim() || "",
+            template: template?.trim() || "",
+        };
+    }
+    catch (err) {
+        console.info("No custom daily note settings found!", err);
+    }
+}
+/**
+ * Read the user settings for the `weekly-notes` plugin
+ * to keep behavior of creating a new note in-sync.
+ */
+function getWeeklyNoteSettings() {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const pluginManager = window.app.plugins;
+        const calendarSettings = pluginManager.getPlugin("calendar")?.options;
+        const periodicNotesSettings = pluginManager.getPlugin("periodic-notes")?.settings?.weekly;
+        if (shouldUsePeriodicNotesSettings("weekly")) {
+            return {
+                format: periodicNotesSettings.format || DEFAULT_WEEKLY_NOTE_FORMAT,
+                folder: periodicNotesSettings.folder?.trim() || "",
+                template: periodicNotesSettings.template?.trim() || "",
+            };
+        }
+        const settings = calendarSettings || {};
+        return {
+            format: settings.weeklyNoteFormat || DEFAULT_WEEKLY_NOTE_FORMAT,
+            folder: settings.weeklyNoteFolder?.trim() || "",
+            template: settings.weeklyNoteTemplate?.trim() || "",
+        };
+    }
+    catch (err) {
+        console.info("No custom weekly note settings found!", err);
+    }
+}
+/**
+ * Read the user settings for the `periodic-notes` plugin
+ * to keep behavior of creating a new note in-sync.
+ */
+function getMonthlyNoteSettings() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pluginManager = window.app.plugins;
+    try {
+        const settings = (shouldUsePeriodicNotesSettings("monthly") &&
+            pluginManager.getPlugin("periodic-notes")?.settings?.monthly) ||
+            {};
+        return {
+            format: settings.format || DEFAULT_MONTHLY_NOTE_FORMAT,
+            folder: settings.folder?.trim() || "",
+            template: settings.template?.trim() || "",
+        };
+    }
+    catch (err) {
+        console.info("No custom monthly note settings found!", err);
+    }
+}
+/**
+ * Read the user settings for the `periodic-notes` plugin
+ * to keep behavior of creating a new note in-sync.
+ */
+function getQuarterlyNoteSettings() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pluginManager = window.app.plugins;
+    try {
+        const settings = (shouldUsePeriodicNotesSettings("quarterly") &&
+            pluginManager.getPlugin("periodic-notes")?.settings?.quarterly) ||
+            {};
+        return {
+            format: settings.format || DEFAULT_QUARTERLY_NOTE_FORMAT,
+            folder: settings.folder?.trim() || "",
+            template: settings.template?.trim() || "",
+        };
+    }
+    catch (err) {
+        console.info("No custom quarterly note settings found!", err);
+    }
+}
+/**
+ * Read the user settings for the `periodic-notes` plugin
+ * to keep behavior of creating a new note in-sync.
+ */
+function getYearlyNoteSettings() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pluginManager = window.app.plugins;
+    try {
+        const settings = (shouldUsePeriodicNotesSettings("yearly") &&
+            pluginManager.getPlugin("periodic-notes")?.settings?.yearly) ||
+            {};
+        return {
+            format: settings.format || DEFAULT_YEARLY_NOTE_FORMAT,
+            folder: settings.folder?.trim() || "",
+            template: settings.template?.trim() || "",
+        };
+    }
+    catch (err) {
+        console.info("No custom yearly note settings found!", err);
+    }
+}
+
+// Credit: @creationix/path.js
+function join(...partSegments) {
+    // Split the inputs into a list of path commands.
+    let parts = [];
+    for (let i = 0, l = partSegments.length; i < l; i++) {
+        parts = parts.concat(partSegments[i].split("/"));
+    }
+    // Interpret the path commands to get the new resolved path.
+    const newParts = [];
+    for (let i = 0, l = parts.length; i < l; i++) {
+        const part = parts[i];
+        // Remove leading and trailing slashes
+        // Also remove "." segments
+        if (!part || part === ".")
+            continue;
+        // Push new path segments.
+        else
+            newParts.push(part);
+    }
+    // Preserve the initial slash if there was one.
+    if (parts[0] === "")
+        newParts.unshift("");
+    // Turn back into a single string path.
+    return newParts.join("/");
+}
+async function ensureFolderExists(path) {
+    const dirs = path.replace(/\\/g, "/").split("/");
+    dirs.pop(); // remove basename
+    if (dirs.length) {
+        const dir = join(...dirs);
+        if (!window.app.vault.getAbstractFileByPath(dir)) {
+            await window.app.vault.createFolder(dir);
+        }
+    }
+}
+async function getNotePath(directory, filename) {
+    if (!filename.endsWith(".md")) {
+        filename += ".md";
+    }
+    const path = obsidian__default["default"].normalizePath(join(directory, filename));
+    await ensureFolderExists(path);
+    return path;
+}
+async function getTemplateInfo(template) {
+    const { metadataCache, vault } = window.app;
+    const templatePath = obsidian__default["default"].normalizePath(template);
+    if (templatePath === "/") {
+        return Promise.resolve(["", null]);
+    }
+    try {
+        const templateFile = metadataCache.getFirstLinkpathDest(templatePath, "");
+        const contents = await vault.cachedRead(templateFile);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const IFoldInfo = window.app.foldManager.load(templateFile);
+        return [contents, IFoldInfo];
+    }
+    catch (err) {
+        console.error(`Failed to read the daily note template '${templatePath}'`, err);
+        new obsidian__default["default"].Notice("Failed to read the daily note template");
+        return ["", null];
+    }
+}
+
+/**
+ * dateUID is a way of weekly identifying daily/weekly/monthly notes.
+ * They are prefixed with the granularity to avoid ambiguity.
+ */
+function getDateUID(date, granularity = "day") {
+    const ts = date.clone().startOf(granularity).format();
+    return `${granularity}-${ts}`;
+}
+function removeEscapedCharacters(format) {
+    return format.replace(/\[[^\]]*\]/g, ""); // remove everything within brackets
+}
+/**
+ * XXX: When parsing dates that contain both week numbers and months,
+ * Moment choses to ignore the week numbers. For the week dateUID, we
+ * want the opposite behavior. Strip the MMM from the format to patch.
+ */
+function isFormatAmbiguous(format, granularity) {
+    if (granularity === "week") {
+        const cleanFormat = removeEscapedCharacters(format);
+        return (/w{1,2}/i.test(cleanFormat) &&
+            (/M{1,4}/.test(cleanFormat) || /D{1,4}/.test(cleanFormat)));
+    }
+    return false;
+}
+function getDateFromFile(file, granularity) {
+    return getDateFromFilename(file.basename, granularity);
+}
+function getDateFromFilename(filename, granularity) {
+    const getSettings = {
+        day: getDailyNoteSettings,
+        week: getWeeklyNoteSettings,
+        month: getMonthlyNoteSettings,
+        quarter: getQuarterlyNoteSettings,
+        year: getYearlyNoteSettings,
+    };
+    const format = getSettings[granularity]().format.split("/").pop();
+    const noteDate = window.moment(filename, format, true);
+    if (!noteDate.isValid()) {
+        return null;
+    }
+    if (isFormatAmbiguous(format, granularity)) {
+        if (granularity === "week") {
+            const cleanFormat = removeEscapedCharacters(format);
+            if (/w{1,2}/i.test(cleanFormat)) {
+                return window.moment(filename, 
+                // If format contains week, remove day & month formatting
+                format.replace(/M{1,4}/g, "").replace(/D{1,4}/g, ""), false);
+            }
+        }
+    }
+    return noteDate;
+}
+
+class DailyNotesFolderMissingError extends Error {
+}
+/**
+ * This function mimics the behavior of the daily-notes plugin
+ * so it will replace {{date}}, {{title}}, and {{time}} with the
+ * formatted timestamp.
+ *
+ * Note: it has an added bonus that it's not 'today' specific.
+ */
+async function createDailyNote(date) {
+    const app = window.app;
+    const { vault } = app;
+    const moment = window.moment;
+    const { template, format, folder } = getDailyNoteSettings();
+    const [templateContents, IFoldInfo] = await getTemplateInfo(template);
+    const filename = date.format(format);
+    const normalizedPath = await getNotePath(folder, filename);
+    try {
+        const createdFile = await vault.create(normalizedPath, templateContents
+            .replace(/{{\s*date\s*}}/gi, filename)
+            .replace(/{{\s*time\s*}}/gi, moment().format("HH:mm"))
+            .replace(/{{\s*title\s*}}/gi, filename)
+            .replace(/{{\s*(date|time)\s*(([+-]\d+)([yqmwdhs]))?\s*(:.+?)?}}/gi, (_, _timeOrDate, calc, timeDelta, unit, momentFormat) => {
+            const now = moment();
+            const currentDate = date.clone().set({
+                hour: now.get("hour"),
+                minute: now.get("minute"),
+                second: now.get("second"),
+            });
+            if (calc) {
+                currentDate.add(parseInt(timeDelta, 10), unit);
+            }
+            if (momentFormat) {
+                return currentDate.format(momentFormat.substring(1).trim());
+            }
+            return currentDate.format(format);
+        })
+            .replace(/{{\s*yesterday\s*}}/gi, date.clone().subtract(1, "day").format(format))
+            .replace(/{{\s*tomorrow\s*}}/gi, date.clone().add(1, "d").format(format)));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        app.foldManager.save(createdFile, IFoldInfo);
+        return createdFile;
+    }
+    catch (err) {
+        console.error(`Failed to create file: '${normalizedPath}'`, err);
+        new obsidian__default["default"].Notice("Unable to create new file.");
+    }
+}
+function getDailyNote(date, dailyNotes) {
+    return dailyNotes[getDateUID(date, "day")] ?? null;
+}
+function getAllDailyNotes() {
+    /**
+     * Find all daily notes in the daily note folder
+     */
+    const { vault } = window.app;
+    const { folder } = getDailyNoteSettings();
+    const dailyNotesFolder = vault.getAbstractFileByPath(obsidian__default["default"].normalizePath(folder));
+    if (!dailyNotesFolder) {
+        throw new DailyNotesFolderMissingError("Failed to find daily notes folder");
+    }
+    const dailyNotes = {};
+    obsidian__default["default"].Vault.recurseChildren(dailyNotesFolder, (note) => {
+        if (note instanceof obsidian__default["default"].TFile) {
+            const date = getDateFromFile(note, "day");
+            if (date) {
+                const dateString = getDateUID(date, "day");
+                dailyNotes[dateString] = note;
+            }
+        }
+    });
+    return dailyNotes;
+}
+var createDailyNote_1 = createDailyNote;
+var getAllDailyNotes_1 = getAllDailyNotes;
+var getDailyNote_1 = getDailyNote;
+
+function getDailyNotePath() {
+    return __awaiter(this, void 0, void 0, function* () {
+        // TODO: change this
+        // TODO: write tests, mock daily-notes-interface
+        // TODO: where does the type conflict come from?
+        const now = window.moment();
+        let dailyNote = getDailyNote_1(now, getAllDailyNotes_1());
+        if (!dailyNote) {
+            dailyNote = yield createDailyNote_1(now);
+        }
+        return dailyNote.path;
+    });
+}
+
 function getTaskStatus(task) {
     const [, taskStatus] = task.text.match(/\[(.)]/);
     return taskStatus;
@@ -7755,17 +8115,18 @@ function doesRuleMatchTaskStatus(rule, task) {
     }
     return rule.statuses.includes(getTaskStatus(task));
 }
-function doesRuleMatchPath(rule, path) {
-    if (isEmpty(rule.pathPatterns)) {
+function doesStringOfPatternsMatchText(patterns, text) {
+    if (isEmpty(patterns)) {
         return true;
     }
-    return rule.pathPatterns
+    return patterns
         .split("\n")
         .map((pattern) => new RegExp(pattern))
-        .some((pattern) => pattern.test(path));
+        .some((pattern) => pattern.test(text));
 }
 function isRuleActionValid(rule) {
-    return rule.defaultArchiveFileName.trim().length > 0;
+    return (rule.defaultArchiveFileName.trim().length > 0 ||
+        rule.ruleAction === RuleAction.DELETE);
 }
 
 /**
@@ -8008,12 +8369,6 @@ function addNewlinesToSection(section) {
         }
     }
 }
-function normalizeNewlinesRecursively(root) {
-    for (const child of root.children) {
-        child.blockContent.children = normalizeNewlines(child.blockContent.children);
-        normalizeNewlinesRecursively(child);
-    }
-}
 const stripSurroundingNewlines = flow_1(dropWhile(isEmptyBlock), dropRightWhile(isEmptyBlock));
 function isEmptyBlock(block) {
     return block.text.trim().length === 0;
@@ -8024,9 +8379,6 @@ function addSurroundingNewlines(blocks) {
         return [newLine];
     }
     return [newLine, ...blocks, newLine];
-}
-function normalizeNewlines(blocks) {
-    return addSurroundingNewlines(stripSurroundingNewlines(blocks));
 }
 function splitOnIndentation(line) {
     const indentationMatch = line.match(INDENTATION_PATTERN);
@@ -8069,11 +8421,16 @@ function createDefaultRule(settings) {
     return {
         archiveToSeparateFile: settings.archiveToSeparateFile,
         defaultArchiveFileName: settings.defaultArchiveFileName,
-        dateFormat: settings.additionalMetadataBeforeArchiving.dateFormat,
+        dateFormat: settings.dateFormat,
+        separateFileType: settings.separateFileType,
         obsidianTasksCompletedDateFormat: DEFAULT_DATE_FORMAT,
+        ruleAction: RuleAction.MOVE_TO_FILE,
         statuses: "",
         pathPatterns: "", // todo: this belongs to a separate object
     };
+}
+function removeExtension(path) {
+    return path.replace(/\.[a-z]+$/, "");
 }
 
 function completeTask(text) {
@@ -8093,10 +8450,17 @@ class ArchiveFeature {
         this.metadataService = metadataService;
         this.settings = settings;
         this.archiveHeadingPattern = archiveHeadingPattern;
-        this.addDestinationToTask = ({ task, rule }) => {
-            const archivePath = rule.archiveToSeparateFile
-                ? rule.defaultArchiveFileName
-                : "current-file";
+        this.addDestinationToTask = ({ task, rule }) => __awaiter(this, void 0, void 0, function* () {
+            let archivePath = "current-file";
+            if (rule.archiveToSeparateFile) {
+                if (rule.separateFileType === ArchiveFileType.DAILY) {
+                    const fullPath = yield getDailyNotePath();
+                    archivePath = removeExtension(fullPath);
+                }
+                else {
+                    archivePath = rule.defaultArchiveFileName;
+                }
+            }
             const resolvedPath = this.placeholderService.resolve(archivePath, {
                 dateFormat: rule.dateFormat,
                 block: task,
@@ -8109,11 +8473,12 @@ class ArchiveFeature {
             }));
             return {
                 task,
+                rule,
                 resolvedPath,
                 resolvedHeadings: resolveWithTask(this.settings.headings),
                 resolvedListItems: resolveWithTask(this.settings.listItems),
             };
-        };
+        });
         this.taskFilter = {
             blockFilter: (block) => this.taskTestingService.doesTaskNeedArchiving(block),
             sectionFilter: (section) => !this.isTopArchiveHeading(section.text),
@@ -8176,7 +8541,8 @@ class ArchiveFeature {
         });
     }
     findRuleForTask(task) {
-        return (this.settings.rules.find((rule) => doesRuleMatchPath(rule, this.workspace.getActiveFile().path) &&
+        return (this.settings.rules.find((rule) => doesStringOfPatternsMatchText(rule.pathPatterns, this.workspace.getActiveFile().path) &&
+            doesStringOfPatternsMatchText(rule.textPatterns, task.text) &&
             doesRuleMatchTaskStatus(rule, task) &&
             isRuleActionValid(rule)) || createDefaultRule(this.settings));
     }
@@ -8187,10 +8553,12 @@ class ArchiveFeature {
     }
     archiveTasks(tasks, activeFile) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield flow(orderBy(({ text }) => getTaskCompletionDate(text), this.getSortOrder()), map(flow(this.textReplacementService.replaceText, (task) => ({
+            const tasksWithDestinations = yield flow(orderBy(({ text }) => getTaskCompletionDate(text), this.getSortOrder()), map(flow(this.textReplacementService.replaceText, (task) => ({
                 task,
                 rule: this.findRuleForTask(task),
-            }), this.metadataService.appendMetadata, this.addDestinationToTask)), groupBy((task) => task.resolvedPath), toPairs, map(([resolvedPath, tasksForPath]) => __awaiter(this, void 0, void 0, function* () {
+            }), this.metadataService.appendMetadata, this.addDestinationToTask)), (promises) => Promise.all(promises))(tasks);
+            const withoutTasksToDelete = tasksWithDestinations.filter((task) => task.rule.ruleAction !== RuleAction.DELETE);
+            yield flow(groupBy((task) => task.resolvedPath), toPairs, map(([resolvedPath, tasksForPath]) => __awaiter(this, void 0, void 0, function* () {
                 const archiveFile = resolvedPath === "current-file"
                     ? activeFile
                     : yield this.getDiskFile(resolvedPath); // todo: this may be an issue if the rule says to archive a task to this exact file
@@ -8199,7 +8567,7 @@ class ArchiveFeature {
                         this.archiveBlocksToRoot([task], tree, resolvedHeadings, resolvedListItems);
                     }
                 });
-            })), (promises) => Promise.all(promises))(tasks);
+            })), (promises) => Promise.all(promises))(withoutTasksToDelete);
         });
     }
     getArchiveFile(activeFile) {
@@ -8341,155 +8709,6 @@ class ArchiveFeature {
     }
 }
 
-class ListBlock extends Block {
-    stringify(indentation) {
-        const theseLines = super.stringify(indentation);
-        const childLines = flatMap_1(this.children, (child) => {
-            const extraIndentationForChildren = child instanceof ListBlock
-                ? indentation
-                : ListBlock.EXTRA_INDENTATION_FOR_CHILD_TEXT_BLOCKS;
-            return child
-                .stringify(indentation)
-                .map((text) => extraIndentationForChildren + text);
-        });
-        return [...theseLines, ...childLines];
-    }
-}
-ListBlock.EXTRA_INDENTATION_FOR_CHILD_TEXT_BLOCKS = "  ";
-
-class TreeBuilder {
-    constructor() {
-        this.contextStack = [];
-    }
-    buildTree(root, nodes) {
-        this.contextStack.push(root);
-        for (const node of nodes) {
-            this.adjustContextTo(node.level);
-            this.appendChildToContext(node.markdownNode);
-            if (this.canBeContext(node.markdownNode)) {
-                this.contextStack.push(node);
-            }
-        }
-    }
-    adjustContextTo(level) {
-        const actualLevelOfNesting = this.contextStack.length;
-        const stepsToGoUp = actualLevelOfNesting - level;
-        if (stepsToGoUp >= 0) {
-            this.clearStack(stepsToGoUp);
-        }
-    }
-    canBeContext(node) {
-        return node instanceof ListBlock || node instanceof Section;
-    }
-    appendChildToContext(child) {
-        const { markdownNode } = last_1(this.contextStack);
-        // todo: mutation
-        child.parent = markdownNode;
-        markdownNode.appendChild(child);
-    }
-    clearStack(levels) {
-        for (let i = 0; i < levels; i++) {
-            this.contextStack.pop();
-        }
-    }
-}
-
-class BlockParser {
-    constructor(settings) {
-        this.settings = settings;
-    }
-    parse(lines) {
-        const flatBlocks = lines.map((line) => this.parseFlatBlock(line));
-        const rootBlock = new RootBlock();
-        const rootFlatBlock = {
-            markdownNode: rootBlock,
-            level: 0,
-        };
-        new TreeBuilder().buildTree(rootFlatBlock, flatBlocks);
-        return rootBlock;
-    }
-    getIndentationLevel(line) {
-        // TODO: this needs to be 1 only because the root block is 0, but this way this knowledge is implicit
-        const [indentation] = splitOnIndentation(line);
-        const levelsOfIndentation = 1;
-        if (this.settings.useTab) {
-            return levelsOfIndentation + indentation.length;
-        }
-        return (levelsOfIndentation + Math.ceil(indentation.length / this.settings.tabSize));
-    }
-    parseFlatBlock(line) {
-        const [, text] = splitOnIndentation(line);
-        const level = this.getIndentationLevel(line);
-        const markdownNode = text.match(LIST_MARKER_PATTERN)
-            ? new ListBlock(text)
-            : new TextBlock(text);
-        return {
-            level,
-            markdownNode,
-        };
-    }
-}
-
-class ListToHeadingFeature {
-    constructor(parser, settings) {
-        this.parser = parser;
-        this.settings = settings;
-    }
-    turnListItemsIntoHeadings(editor) {
-        const thisListRange = detectListUnderCursor(editor);
-        if (thisListRange === null) {
-            return;
-        }
-        const thisListLines = editor.getRange(...thisListRange).split("\n");
-        const parsedRoot = this.parser.parse(thisListLines);
-        const newSectionRoot = buildSectionFromList(parsedRoot.blockContent);
-        replaceChildBlocksWithChildSectionsRecursively(newSectionRoot, this.getDepthOfLineUnderCursor(editor));
-        const parentHeadingTokenLevel = this.getHeadingTokenLevelUnderCursor(editor);
-        newSectionRoot.recalculateTokenLevels(parentHeadingTokenLevel);
-        if (this.settings.addNewlinesAroundHeadings) {
-            normalizeNewlinesRecursively(newSectionRoot);
-        }
-        const newListLines = newSectionRoot
-            .stringify(buildIndentation(this.settings.indentationSettings))
-            .join("\n");
-        editor.replaceRange(newListLines, ...thisListRange);
-    }
-    getDepthOfLineUnderCursor(editor) {
-        const line = editor.getLine(editor.getCursor().line);
-        // TODO: kludge. This is not a good reason to create a parser
-        return new BlockParser(this.settings.indentationSettings).getIndentationLevel(line);
-    }
-    getHeadingTokenLevelUnderCursor(editor) {
-        const headingUnderCursor = detectHeadingUnderCursor(editor);
-        if (headingUnderCursor === null) {
-            return 0;
-        }
-        const emptyRootSectionUnderCursor = this.parser.parse(editor.getRange(...headingUnderCursor).split("\n"));
-        const actualSectionUnderCursor = emptyRootSectionUnderCursor.children[0];
-        return actualSectionUnderCursor.tokenLevel;
-    }
-}
-function replaceChildBlocksWithChildSectionsRecursively(section, maxReplacementDepth, currentDepth = 1 // TODO: again, implicit knowledge about levels
-) {
-    if (currentDepth > maxReplacementDepth) {
-        return;
-    }
-    for (const blockChild of section.blockContent.children) {
-        section.appendChild(buildSectionFromList(blockChild));
-    }
-    section.blockContent.children = [];
-    for (const child of section.children) {
-        replaceChildBlocksWithChildSectionsRecursively(child, maxReplacementDepth, currentDepth + 1);
-    }
-}
-function buildSectionFromList(listRoot) {
-    const newBlockContent = new RootBlock();
-    newBlockContent.children = listRoot.children;
-    // TODO: this regex is out of place
-    const sectionText = listRoot.text.replace(/^(?<bullet>[-*+]|\d+\.)(?<task> \[[x ]])?/, "");
-    return new Section(sectionText, 0, newBlockContent);
-}
-
 class TaskListSortFeature {
     constructor(parser, taskTestingService, settings) {
         this.parser = parser;
@@ -8602,6 +8821,21 @@ var sortBy = _baseRest(function(collection, iteratees) {
 });
 
 var sortBy_1 = sortBy;
+
+class ListBlock extends Block {
+    stringify(indentationFromParent) {
+        const theseLines = super.stringify(indentationFromParent);
+        const childLines = flatMap_1(this.children, (child) => {
+            const stringifiedChildLines = child.stringify(indentationFromParent);
+            let extraIndentationForChildren = "";
+            if (child instanceof ListBlock) {
+                extraIndentationForChildren = indentationFromParent;
+            }
+            return stringifiedChildLines.map((text) => extraIndentationForChildren + text);
+        });
+        return [...theseLines, ...childLines];
+    }
+}
 
 class ListItemService {
     constructor(placeholderService, settings) {
@@ -8782,11 +9016,117 @@ class TextReplacementService {
     }
     replaceTextDeep(block) {
         const { regex, replacement } = this.settings.textReplacement;
-        const compiledRegex = new RegExp(regex);
+        const compiledRegex = new RegExp(regex, "g");
         block.text = block.text.replace(compiledRegex, replacement);
         block.children = block.children.map((child) => this.replaceTextDeep(child));
         return block;
     }
+}
+
+class TreeBuilder {
+    constructor() {
+        this.contextStack = [];
+    }
+    buildTree(root, nodes) {
+        this.contextStack.push(root);
+        for (const node of nodes) {
+            this.adjustContextTo(node.level);
+            this.appendChildToContext(node.markdownNode);
+            if (this.canBeContext(node.markdownNode)) {
+                this.contextStack.push(node);
+            }
+        }
+    }
+    adjustContextTo(level) {
+        const actualLevelOfNesting = this.contextStack.length;
+        const stepsToGoUp = actualLevelOfNesting - level;
+        if (stepsToGoUp >= 0) {
+            this.clearStack(stepsToGoUp);
+        }
+    }
+    canBeContext(node) {
+        return node instanceof ListBlock || node instanceof Section;
+    }
+    appendChildToContext(child) {
+        const { markdownNode } = last_1(this.contextStack);
+        // todo: mutation
+        child.parent = markdownNode;
+        markdownNode.appendChild(child);
+    }
+    clearStack(levels) {
+        for (let i = 0; i < levels; i++) {
+            this.contextStack.pop();
+        }
+    }
+}
+
+function removeIndentationFromListItems(rootBlock) {
+    function recursive(block, parentIndentation) {
+        for (const child of block.children) {
+            if (child instanceof ListBlock) {
+                const [indentation, withoutIndentation] = splitOnIndentation(child.text);
+                child.text = withoutIndentation;
+                recursive(child, indentation);
+            }
+            else {
+                child.text = child.text.substring(parentIndentation.length);
+            }
+        }
+    }
+    recursive(rootBlock, "");
+}
+class BlockParser {
+    constructor(settings) {
+        this.settings = settings;
+    }
+    parse(lines) {
+        const flatBlocks = lines.map((line) => this.parseFlatBlock(line));
+        const rootBlock = new RootBlock();
+        const rootFlatBlock = {
+            markdownNode: rootBlock,
+            level: 0,
+        };
+        new TreeBuilder().buildTree(rootFlatBlock, flatBlocks);
+        removeIndentationFromListItems(rootBlock);
+        return rootBlock;
+    }
+    getIndentationLevel(line) {
+        // TODO: this needs to be 1 only because the root block is 0, but this way this knowledge is implicit
+        const [indentation] = splitOnIndentation(line);
+        const levelsOfIndentation = 1;
+        if (this.settings.useTab) {
+            return levelsOfIndentation + indentation.length;
+        }
+        return (levelsOfIndentation + Math.ceil(indentation.length / this.settings.tabSize));
+    }
+    parseFlatBlock(line) {
+        const [, text] = splitOnIndentation(line);
+        const level = this.getIndentationLevel(line);
+        const markdownNode = text.match(LIST_MARKER_PATTERN)
+            ? new ListBlock(line)
+            : new TextBlock(line);
+        return {
+            level,
+            markdownNode,
+        };
+    }
+}
+
+const FRONT_MATTER_DELIMITER = "---";
+function splitFrontMatter(lines) {
+    const [firstLine, ...linesAfterFirst] = lines;
+    if (firstLine.trimEnd() !== FRONT_MATTER_DELIMITER) {
+        return [[], lines];
+    }
+    const closingDelimiterIndexMinusFirstLine = linesAfterFirst.findIndex((line) => line.trimEnd() === FRONT_MATTER_DELIMITER);
+    if (closingDelimiterIndexMinusFirstLine < 0) {
+        throw new Error(`Front matter started, but there was no closing delimiter: ${lines.join("\n")}`);
+    }
+    const frontMatterLastLineIndex = closingDelimiterIndexMinusFirstLine + 1;
+    const documentStartIndex = frontMatterLastLineIndex + 1;
+    const frontMatterLines = lines.slice(0, documentStartIndex);
+    const documentLines = lines.slice(documentStartIndex);
+    return [frontMatterLines, documentLines];
 }
 
 function buildRawSectionsFromLines(lines) {
@@ -8812,7 +9152,9 @@ class SectionParser {
         this.blockParser = blockParser;
     }
     parse(lines) {
-        const [root, ...flatChildren] = buildRawSectionsFromLines(lines)
+        const [frontMatterLines, documentLines] = splitFrontMatter(lines);
+        const flatSectionsWithUnparsedChildren = buildRawSectionsFromLines(documentLines);
+        const [root, ...flatChildren] = flatSectionsWithUnparsedChildren
             .map((rawSection) => {
             const blockContent = this.blockParser.parse(rawSection.lines);
             const section = new Section(rawSection.text, rawSection.tokenLevel, blockContent);
@@ -8827,6 +9169,7 @@ class SectionParser {
             level: section.tokenLevel,
         }));
         new TreeBuilder().buildTree(root, flatChildren);
+        root.markdownNode.frontMatter = frontMatterLines;
         return root.markdownNode;
     }
     walkBlocksDeep(block, visitor) {
@@ -8835,10 +9178,10 @@ class SectionParser {
     }
 }
 
-const sharedConfig = {};
-function setHydrateContext(context) {
-  sharedConfig.context = context;
-}
+const sharedConfig = {
+  context: undefined,
+  registry: undefined
+};
 
 const equalFn = (a, b) => a === b;
 const $PROXY = Symbol("solid-proxy");
@@ -8865,11 +9208,12 @@ function createRoot(fn, detachedOwner) {
   const listener = Listener,
     owner = Owner,
     unowned = fn.length === 0,
+    current = detachedOwner === undefined ? owner : detachedOwner,
     root = unowned ? UNOWNED : {
       owned: null,
       cleanups: null,
-      context: null,
-      owner: detachedOwner === undefined ? owner : detachedOwner
+      context: current ? current.context : null,
+      owner: current
     },
     updateFn = unowned ? fn : () => fn(() => untrack(() => cleanNode(root)));
   Owner = root;
@@ -8904,7 +9248,7 @@ function createRenderEffect(fn, value, options) {
 function createEffect(fn, value, options) {
   runEffects = runUserEffects;
   const c = createComputation(fn, value, false, STALE);
-  c.user = true;
+  if (!options || !options.render) c.user = true;
   Effects ? Effects.push(c) : updateComputation(c);
 }
 function createMemo(fn, value, options) {
@@ -8964,8 +9308,7 @@ function createContext(defaultValue, options) {
   };
 }
 function useContext(context) {
-  let ctx;
-  return (ctx = lookup(Owner, context.id)) !== undefined ? ctx : context.defaultValue;
+  return Owner && Owner.context && Owner.context[context.id] !== undefined ? Owner.context[context.id] : context.defaultValue;
 }
 function children(fn) {
   const children = createMemo(fn);
@@ -8977,9 +9320,8 @@ function children(fn) {
   return memo;
 }
 function readSignal() {
-  const runningTransition = Transition ;
-  if (this.sources && (this.state || runningTransition )) {
-    if (this.state === STALE || runningTransition ) updateComputation(this);else {
+  if (this.sources && (this.state)) {
+    if ((this.state) === STALE) updateComputation(this);else {
       const updates = Updates;
       Updates = null;
       runUpdates(() => lookUpstream(this), false);
@@ -9015,11 +9357,11 @@ function writeSignal(node, value, isComp) {
           const o = node.observers[i];
           const TransitionRunning = Transition && Transition.running;
           if (TransitionRunning && Transition.disposed.has(o)) ;
-          if (TransitionRunning && !o.tState || !TransitionRunning && !o.state) {
+          if (TransitionRunning ? !o.tState : !o.state) {
             if (o.pure) Updates.push(o);else Effects.push(o);
             if (o.observers) markDownstream(o);
           }
-          if (TransitionRunning) ;else o.state = STALE;
+          if (!TransitionRunning) o.state = STALE;
         }
         if (Updates.length > 10e5) {
           Updates = [];
@@ -9054,7 +9396,8 @@ function runComputation(node, value, time) {
         node.owned = null;
       }
     }
-    handleError(err);
+    node.updatedAt = time + 1;
+    return handleError(err);
   }
   if (!node.updatedAt || node.updatedAt <= time) {
     if (node.updatedAt != null && "observers" in node) {
@@ -9074,7 +9417,7 @@ function createComputation(fn, init, pure, state = STALE, options) {
     cleanups: null,
     value: init,
     owner: Owner,
-    context: null,
+    context: Owner ? Owner.context : null,
     pure
   };
   if (Owner === null) ;else if (Owner !== UNOWNED) {
@@ -9085,19 +9428,18 @@ function createComputation(fn, init, pure, state = STALE, options) {
   return c;
 }
 function runTop(node) {
-  const runningTransition = Transition ;
-  if (node.state === 0 || runningTransition ) return;
-  if (node.state === PENDING || runningTransition ) return lookUpstream(node);
+  if ((node.state) === 0) return;
+  if ((node.state) === PENDING) return lookUpstream(node);
   if (node.suspense && untrack(node.suspense.inFallback)) return node.suspense.effects.push(node);
   const ancestors = [node];
   while ((node = node.owner) && (!node.updatedAt || node.updatedAt < ExecCount)) {
-    if (node.state || runningTransition ) ancestors.push(node);
+    if (node.state) ancestors.push(node);
   }
   for (let i = ancestors.length - 1; i >= 0; i--) {
     node = ancestors[i];
-    if (node.state === STALE || runningTransition ) {
+    if ((node.state) === STALE) {
       updateComputation(node);
-    } else if (node.state === PENDING || runningTransition ) {
+    } else if ((node.state) === PENDING) {
       const updates = Updates;
       Updates = null;
       runUpdates(() => lookUpstream(node, ancestors[0]), false);
@@ -9141,26 +9483,24 @@ function runUserEffects(queue) {
     const e = queue[i];
     if (!e.user) runTop(e);else queue[userLength++] = e;
   }
-  if (sharedConfig.context) setHydrateContext();
   for (i = 0; i < userLength; i++) runTop(queue[i]);
 }
 function lookUpstream(node, ignore) {
-  const runningTransition = Transition ;
   node.state = 0;
   for (let i = 0; i < node.sources.length; i += 1) {
     const source = node.sources[i];
     if (source.sources) {
-      if (source.state === STALE || runningTransition ) {
-        if (source !== ignore) runTop(source);
-      } else if (source.state === PENDING || runningTransition ) lookUpstream(source, ignore);
+      const state = source.state;
+      if (state === STALE) {
+        if (source !== ignore && (!source.updatedAt || source.updatedAt < ExecCount)) runTop(source);
+      } else if (state === PENDING) lookUpstream(source, ignore);
     }
   }
 }
 function markDownstream(node) {
-  const runningTransition = Transition ;
   for (let i = 0; i < node.observers.length; i += 1) {
     const o = node.observers[i];
-    if (!o.state || runningTransition ) {
+    if (!o.state) {
       o.state = PENDING;
       if (o.pure) Updates.push(o);else Effects.push(o);
       o.observers && markDownstream(o);
@@ -9186,26 +9526,24 @@ function cleanNode(node) {
     }
   }
   if (node.owned) {
-    for (i = 0; i < node.owned.length; i++) cleanNode(node.owned[i]);
+    for (i = node.owned.length - 1; i >= 0; i--) cleanNode(node.owned[i]);
     node.owned = null;
   }
   if (node.cleanups) {
-    for (i = 0; i < node.cleanups.length; i++) node.cleanups[i]();
+    for (i = node.cleanups.length - 1; i >= 0; i--) node.cleanups[i]();
     node.cleanups = null;
   }
   node.state = 0;
-  node.context = null;
 }
 function castError(err) {
-  if (err instanceof Error || typeof err === "string") return err;
-  return new Error("Unknown error");
+  if (err instanceof Error) return err;
+  return new Error(typeof err === "string" ? err : "Unknown error", {
+    cause: err
+  });
 }
-function handleError(err) {
-  err = castError(err);
-  throw err;
-}
-function lookup(owner, key) {
-  return owner ? owner.context && owner.context[key] !== undefined ? owner.context[key] : lookup(owner.owner, key) : undefined;
+function handleError(err, owner = Owner) {
+  const error = castError(err);
+  throw error;
 }
 function resolveChildren(children) {
   if (typeof children === "function" && !children.length) return resolveChildren(children());
@@ -9224,6 +9562,7 @@ function createProvider(id, options) {
     let res;
     createRenderEffect(() => res = untrack(() => {
       Owner.context = {
+        ...Owner.context,
         [id]: props.value
       };
       return children(() => props.children);
@@ -9374,6 +9713,12 @@ const propTraps = {
 function resolveSource(s) {
   return !(s = typeof s === "function" ? s() : s) ? {} : s;
 }
+function resolveSources() {
+  for (let i = 0, length = this.length; i < length; ++i) {
+    const v = this[i]();
+    if (v !== undefined) return v;
+  }
+}
 function mergeProps(...sources) {
   let proxy = false;
   for (let i = 0; i < sources.length; i++) {
@@ -9403,26 +9748,44 @@ function mergeProps(...sources) {
     }, propTraps);
   }
   const target = {};
+  const sourcesMap = {};
+  const defined = new Set();
   for (let i = sources.length - 1; i >= 0; i--) {
-    if (sources[i]) {
-      const descriptors = Object.getOwnPropertyDescriptors(sources[i]);
-      for (const key in descriptors) {
-        if (key in target) continue;
-        Object.defineProperty(target, key, {
-          enumerable: true,
-          get() {
-            for (let i = sources.length - 1; i >= 0; i--) {
-              const v = (sources[i] || {})[key];
-              if (v !== undefined) return v;
-            }
+    const source = sources[i];
+    if (!source) continue;
+    const sourceKeys = Object.getOwnPropertyNames(source);
+    for (let i = 0, length = sourceKeys.length; i < length; i++) {
+      const key = sourceKeys[i];
+      if (key === "__proto__" || key === "constructor") continue;
+      const desc = Object.getOwnPropertyDescriptor(source, key);
+      if (!defined.has(key)) {
+        if (desc.get) {
+          defined.add(key);
+          Object.defineProperty(target, key, {
+            enumerable: true,
+            configurable: true,
+            get: resolveSources.bind(sourcesMap[key] = [desc.get.bind(source)])
+          });
+        } else {
+          if (desc.value !== undefined) defined.add(key);
+          target[key] = desc.value;
+        }
+      } else {
+        const sources = sourcesMap[key];
+        if (sources) {
+          if (desc.get) {
+            sources.push(desc.get.bind(source));
+          } else if (desc.value !== undefined) {
+            sources.push(() => desc.value);
           }
-        });
+        } else if (target[key] === undefined) target[key] = desc.value;
       }
     }
   }
   return target;
 }
 
+const narrowedError = name => `Stale read from <${name}>.`;
 function For(props) {
   const fallback = "fallback" in props && {
     fallback: () => props.fallback
@@ -9430,18 +9793,19 @@ function For(props) {
   return createMemo(mapArray(() => props.each, props.children, fallback || undefined));
 }
 function Show(props) {
-  let strictEqual = false;
   const keyed = props.keyed;
   const condition = createMemo(() => props.when, undefined, {
-    equals: (a, b) => strictEqual ? a === b : !a === !b
+    equals: (a, b) => keyed ? a === b : !a === !b
   });
   return createMemo(() => {
     const c = condition();
     if (c) {
       const child = props.children;
       const fn = typeof child === "function" && child.length > 0;
-      strictEqual = keyed || fn;
-      return fn ? untrack(() => child(c)) : child;
+      return fn ? untrack(() => child(keyed ? c : () => {
+        if (!untrack(condition)) throw narrowedError("Show");
+        return props.when;
+      })) : child;
     }
     return props.fallback;
   }, undefined, undefined);
@@ -9516,12 +9880,16 @@ function render(code, element, init, options = {}) {
     element.textContent = "";
   };
 }
-function template(html, check, isSVG) {
-  const t = document.createElement("template");
-  t.innerHTML = html;
-  let node = t.content.firstChild;
-  if (isSVG) node = node.firstChild;
-  return node;
+function template(html, isCE, isSVG) {
+  let node;
+  const create = () => {
+    const t = document.createElement("template");
+    t.innerHTML = html;
+    return isSVG ? t.content.firstChild.firstChild : t.content.firstChild;
+  };
+  const fn = isCE ? () => untrack(() => document.importNode(node || (node = create()), true)) : () => (node || (node = create())).cloneNode(true);
+  fn.cloneNode = fn;
+  return fn;
 }
 function delegateEvents(eventNames, document = window.document) {
   const e = document[$$EVENTS] || (document[$$EVENTS] = new Set());
@@ -9559,17 +9927,7 @@ function eventHandler(e) {
       return node || document;
     }
   });
-  if (sharedConfig.registry && !sharedConfig.done) {
-    sharedConfig.done = true;
-    document.querySelectorAll("[id^=pl-]").forEach(elem => {
-      while (elem && elem.nodeType !== 8 && elem.nodeValue !== "pl-" + e) {
-        let x = elem.nextSibling;
-        elem.remove();
-        elem = x;
-      }
-      elem && elem.remove();
-    });
-  }
+  if (sharedConfig.registry && !sharedConfig.done) sharedConfig.done = _$HY.done = true;
   while (node) {
     const handler = node[key];
     if (handler && !node.disabled) {
@@ -9581,14 +9939,12 @@ function eventHandler(e) {
   }
 }
 function insertExpression(parent, value, current, marker, unwrapArray) {
-  if (sharedConfig.context && !current) current = [...parent.childNodes];
   while (typeof current === "function") current = current();
   if (value === current) return current;
   const t = typeof value,
     multi = marker !== undefined;
   parent = multi && current[0] && current[0].parentNode || parent;
   if (t === "string" || t === "number") {
-    if (sharedConfig.context) return current;
     if (t === "number") value = value.toString();
     if (multi) {
       let node = current[0];
@@ -9602,7 +9958,6 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
       } else current = parent.textContent = value;
     }
   } else if (value == null || t === "boolean") {
-    if (sharedConfig.context) return current;
     current = cleanChildren(parent, current, marker);
   } else if (t === "function") {
     createRenderEffect(() => {
@@ -9618,12 +9973,6 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
       createRenderEffect(() => current = insertExpression(parent, array, current, marker, true));
       return () => current;
     }
-    if (sharedConfig.context) {
-      if (!array.length) return current;
-      for (let i = 0; i < array.length; i++) {
-        if (array[i].parentNode) return current = array;
-      }
-    }
     if (array.length === 0) {
       current = cleanChildren(parent, current, marker);
       if (multi) return current;
@@ -9636,8 +9985,7 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
       appendNodes(parent, array);
     }
     current = array;
-  } else if (value instanceof Node) {
-    if (sharedConfig.context && value.parentNode) return current = multi ? [value] : value;
+  } else if (value.nodeType) {
     if (Array.isArray(current)) {
       if (multi) return current = cleanChildren(parent, current, marker, value);
       cleanChildren(parent, current, null, value);
@@ -9645,19 +9993,20 @@ function insertExpression(parent, value, current, marker, unwrapArray) {
       parent.appendChild(value);
     } else parent.replaceChild(value, parent.firstChild);
     current = value;
-  } else ;
+  } else console.warn(`Unrecognized value. Skipped inserting`, value);
   return current;
 }
 function normalizeIncomingArray(normalized, array, current, unwrap) {
   let dynamic = false;
   for (let i = 0, len = array.length; i < len; i++) {
     let item = array[i],
-      prev = current && current[i];
-    if (item instanceof Node) {
+      prev = current && current[i],
+      t;
+    if (item == null || item === true || item === false) ; else if ((t = typeof item) === "object" && item.nodeType) {
       normalized.push(item);
-    } else if (item == null || item === true || item === false) ; else if (Array.isArray(item)) {
+    } else if (Array.isArray(item)) {
       dynamic = normalizeIncomingArray(normalized, item, prev) || dynamic;
-    } else if ((typeof item) === "function") {
+    } else if (t === "function") {
       if (unwrap) {
         while (typeof item === "function") item = item();
         dynamic = normalizeIncomingArray(normalized, Array.isArray(item) ? item : [item], Array.isArray(prev) ? prev : [prev]) || dynamic;
@@ -9667,9 +10016,7 @@ function normalizeIncomingArray(normalized, array, current, unwrap) {
       }
     } else {
       const value = String(item);
-      if (prev && prev.nodeType === 3 && prev.data === value) {
-        normalized.push(prev);
-      } else normalized.push(document.createTextNode(value));
+      if (prev && prev.nodeType === 3 && prev.data === value) normalized.push(prev);else normalized.push(document.createTextNode(value));
     }
   }
   return dynamic;
@@ -9693,16 +10040,16 @@ function cleanChildren(parent, current, marker, replacement) {
   return [node];
 }
 
-const _tmpl$$f = /*#__PURE__*/template(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>`);
+const _tmpl$$f = /*#__PURE__*/template(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3">`);
 function Cog() {
-  return _tmpl$$f.cloneNode(true);
+  return _tmpl$$f();
 }
 
-const _tmpl$$e = /*#__PURE__*/template(`<a href="https://momentjs.com/docs/#/displaying/format/" target="_blank">Format reference.</a>`),
-  _tmpl$2$a = /*#__PURE__*/template(`<b></b>`);
+const _tmpl$$e = /*#__PURE__*/template(`<a href="https://momentjs.com/docs/#/displaying/format/" target="_blank">Format reference.`),
+  _tmpl$2$a = /*#__PURE__*/template(`<b>`);
 function DateFormatDescription(props) {
-  return [_tmpl$$e.cloneNode(true), " ", "Current syntax: ", (() => {
-    const _el$2 = _tmpl$2$a.cloneNode(true);
+  return [_tmpl$$e(), " ", "Current syntax: ", (() => {
+    const _el$2 = _tmpl$2$a();
     insert(_el$2, () => window.moment().format(props.dateFormat));
     return _el$2;
   })()];
@@ -9710,8 +10057,9 @@ function DateFormatDescription(props) {
 
 const $RAW = Symbol("store-raw"),
   $NODE = Symbol("store-node"),
-  $NAME = Symbol("store-name");
-function wrap$1(value, name) {
+  $HAS = Symbol("store-has"),
+  $SELF = Symbol("store-self");
+function wrap$1(value) {
   let p = value[$PROXY];
   if (!p) {
     Object.defineProperty(value, $PROXY, {
@@ -9760,41 +10108,36 @@ function unwrap(item, set = new Set()) {
   }
   return item;
 }
-function getDataNodes(target) {
-  let nodes = target[$NODE];
-  if (!nodes) Object.defineProperty(target, $NODE, {
-    value: nodes = {}
+function getNodes(target, symbol) {
+  let nodes = target[symbol];
+  if (!nodes) Object.defineProperty(target, symbol, {
+    value: nodes = Object.create(null)
   });
   return nodes;
 }
-function getDataNode(nodes, property, value) {
-  return nodes[property] || (nodes[property] = createDataNode(value));
+function getNode(nodes, property, value) {
+  if (nodes[property]) return nodes[property];
+  const [s, set] = createSignal(value, {
+    equals: false,
+    internal: true
+  });
+  s.$ = set;
+  return nodes[property] = s;
 }
 function proxyDescriptor$1(target, property) {
   const desc = Reflect.getOwnPropertyDescriptor(target, property);
-  if (!desc || desc.get || !desc.configurable || property === $PROXY || property === $NODE || property === $NAME) return desc;
+  if (!desc || desc.get || !desc.configurable || property === $PROXY || property === $NODE) return desc;
   delete desc.value;
   delete desc.writable;
   desc.get = () => target[$PROXY][property];
   return desc;
 }
 function trackSelf(target) {
-  if (getListener()) {
-    const nodes = getDataNodes(target);
-    (nodes._ || (nodes._ = createDataNode()))();
-  }
+  getListener() && getNode(getNodes(target, $NODE), $SELF)();
 }
 function ownKeys(target) {
   trackSelf(target);
   return Reflect.ownKeys(target);
-}
-function createDataNode(value) {
-  const [s, set] = createSignal(value, {
-    equals: false,
-    internal: true
-  });
-  s.$ = set;
-  return s;
 }
 const proxyTraps$1 = {
   get(target, property, receiver) {
@@ -9804,19 +10147,19 @@ const proxyTraps$1 = {
       trackSelf(target);
       return receiver;
     }
-    const nodes = getDataNodes(target);
-    const tracked = nodes.hasOwnProperty(property);
-    let value = tracked ? nodes[property]() : target[property];
-    if (property === $NODE || property === "__proto__") return value;
+    const nodes = getNodes(target, $NODE);
+    const tracked = nodes[property];
+    let value = tracked ? tracked() : target[property];
+    if (property === $NODE || property === $HAS || property === "__proto__") return value;
     if (!tracked) {
       const desc = Object.getOwnPropertyDescriptor(target, property);
-      if (getListener() && (typeof value !== "function" || target.hasOwnProperty(property)) && !(desc && desc.get)) value = getDataNode(nodes, property, value)();
+      if (getListener() && (typeof value !== "function" || target.hasOwnProperty(property)) && !(desc && desc.get)) value = getNode(nodes, property, value)();
     }
     return isWrappable(value) ? wrap$1(value) : value;
   },
   has(target, property) {
-    if (property === $RAW || property === $PROXY || property === $TRACK || property === $NODE || property === "__proto__") return true;
-    this.get(target, property, target);
+    if (property === $RAW || property === $PROXY || property === $TRACK || property === $NODE || property === $HAS || property === "__proto__") return true;
+    getListener() && getNode(getNodes(target, $HAS), property)();
     return property in target;
   },
   set() {
@@ -9832,12 +10175,21 @@ function setProperty(state, property, value, deleting = false) {
   if (!deleting && state[property] === value) return;
   const prev = state[property],
     len = state.length;
-  if (value === undefined) delete state[property];else state[property] = value;
-  let nodes = getDataNodes(state),
+  if (value === undefined) {
+    delete state[property];
+    if (state[$HAS] && state[$HAS][property] && prev !== undefined) state[$HAS][property].$();
+  } else {
+    state[property] = value;
+    if (state[$HAS] && state[$HAS][property] && prev === undefined) state[$HAS][property].$();
+  }
+  let nodes = getNodes(state, $NODE),
     node;
-  if (node = getDataNode(nodes, property, prev)) node.$(() => value);
-  if (Array.isArray(state) && state.length !== len) (node = getDataNode(nodes, "length", len)) && node.$(state.length);
-  (node = nodes._) && node.$();
+  if (node = getNode(nodes, property, prev)) node.$(() => value);
+  if (Array.isArray(state) && state.length !== len) {
+    for (let i = state.length; i < len; i++) (node = nodes[i]) && node.$();
+    (node = getNode(nodes, "length", len)) && node.$(state.length);
+  }
+  (node = nodes[$SELF]) && node.$();
 }
 function mergeStoreNode(state, value) {
   const keys = Object.keys(value);
@@ -10000,10 +10352,10 @@ var classnames = createCommonjsModule(function (module) {
 }());
 });
 
-const _tmpl$$d = /*#__PURE__*/template(`<div><div class="setting-item-info"><div class="setting-item-name"></div><div class="setting-item-description"></div></div><div class="setting-item-control"></div></div>`);
+const _tmpl$$d = /*#__PURE__*/template(`<div><div class="setting-item-info"><div class="setting-item-name"></div><div class="setting-item-description"></div></div><div class="setting-item-control">`);
 function BaseSetting(props) {
   return (() => {
-    const _el$ = _tmpl$$d.cloneNode(true),
+    const _el$ = _tmpl$$d(),
       _el$2 = _el$.firstChild,
       _el$3 = _el$2.firstChild,
       _el$4 = _el$3.nextSibling,
@@ -10016,8 +10368,8 @@ function BaseSetting(props) {
   })();
 }
 
-const _tmpl$$c = /*#__PURE__*/template(`<p><code>- [x] task</code></p>`),
-  _tmpl$2$9 = /*#__PURE__*/template(`<code> </code>`),
+const _tmpl$$c = /*#__PURE__*/template(`<p><code>- [x] task`),
+  _tmpl$2$9 = /*#__PURE__*/template(`<code> `),
   _tmpl$3$2 = /*#__PURE__*/template(`<br>`);
 function HeadingTreeDemo(props) {
   const [settings] = useSettingsContext();
@@ -10031,7 +10383,7 @@ function HeadingTreeDemo(props) {
         children: (heading, i) => {
           const token = () => "#".repeat(i() + settings.archiveHeadingDepth);
           return [(() => {
-            const _el$2 = _tmpl$2$9.cloneNode(true),
+            const _el$2 = _tmpl$2$9(),
               _el$3 = _el$2.firstChild;
             insert(_el$2, token, _el$3);
             insert(_el$2, () => props.placeholderService.resolve(heading.text, {
@@ -10039,29 +10391,29 @@ function HeadingTreeDemo(props) {
               dateFormat: heading.dateFormat
             }), null);
             return _el$2;
-          })(), _tmpl$3$2.cloneNode(true)];
+          })(), _tmpl$3$2()];
         }
-      }), _tmpl$$c.cloneNode(true)];
+      }), _tmpl$$c()];
     }
   });
 }
 
-const _tmpl$$b = /*#__PURE__*/template(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>`),
-  _tmpl$2$8 = /*#__PURE__*/template(`<button type="button" class="header"><div></div></button>`),
-  _tmpl$3$1 = /*#__PURE__*/template(`<div class="archiver-setting-group-content"></div>`),
-  _tmpl$4$1 = /*#__PURE__*/template(`<div class="archiver-setting-group"></div>`);
+const _tmpl$$b = /*#__PURE__*/template(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-right"><polyline points="9 18 15 12 9 6">`),
+  _tmpl$2$8 = /*#__PURE__*/template(`<button type="button" class="header"><div>`),
+  _tmpl$3$1 = /*#__PURE__*/template(`<div class="archiver-setting-group-content">`),
+  _tmpl$4$1 = /*#__PURE__*/template(`<div class="archiver-setting-group">`);
 function SettingGroup(props) {
   var _a;
   const [folded, setFolded] = createSignal((_a = props.initialFolded) !== null && _a !== void 0 ? _a : true);
   return (() => {
-    const _el$ = _tmpl$4$1.cloneNode(true);
+    const _el$ = _tmpl$4$1();
     insert(_el$, createComponent(Show, {
       get when() {
         return props.header;
       },
       keyed: true,
       get children() {
-        const _el$2 = _tmpl$2$8.cloneNode(true),
+        const _el$2 = _tmpl$2$8(),
           _el$3 = _el$2.firstChild;
         _el$2.$$click = () => setFolded(!folded());
         insert(_el$2, createComponent(Show, {
@@ -10080,7 +10432,7 @@ function SettingGroup(props) {
           },
           keyed: true,
           get children() {
-            return _tmpl$$b.cloneNode(true);
+            return _tmpl$$b();
           }
         }), null);
         return _el$2;
@@ -10092,7 +10444,7 @@ function SettingGroup(props) {
       },
       keyed: true,
       get children() {
-        const _el$5 = _tmpl$3$1.cloneNode(true);
+        const _el$5 = _tmpl$3$1();
         insert(_el$5, () => props.children);
         return _el$5;
       }
@@ -10115,7 +10467,7 @@ function TextSetting(props) {
       return classnames("mod-text", props.class);
     },
     get children() {
-      const _el$ = _tmpl$$a.cloneNode(true);
+      const _el$ = _tmpl$$a();
       _el$.$$input = e => props.onInput(e);
       setAttribute(_el$, "spellcheck", false);
       createRenderEffect(() => setAttribute(_el$, "placeholder", props.placeholder));
@@ -10127,7 +10479,7 @@ function TextSetting(props) {
 delegateEvents(["input"]);
 
 const _tmpl$$9 = /*#__PURE__*/template(`<input type="text">`),
-  _tmpl$2$7 = /*#__PURE__*/template(`<button>Delete</button>`);
+  _tmpl$2$7 = /*#__PURE__*/template(`<button>Delete`);
 function HeadingsSettings(props) {
   const [, setSettings] = useSettingsContext();
   const headingLevel = () => props.index + 1;
@@ -10142,7 +10494,7 @@ function HeadingsSettings(props) {
         name: "Heading text",
         get children() {
           return [(() => {
-            const _el$ = _tmpl$$9.cloneNode(true);
+            const _el$ = _tmpl$$9();
             _el$.$$input = ({
               currentTarget: {
                 value
@@ -10153,7 +10505,7 @@ function HeadingsSettings(props) {
             createRenderEffect(() => _el$.value = props.heading.text);
             return _el$;
           })(), (() => {
-            const _el$2 = _tmpl$2$7.cloneNode(true);
+            const _el$2 = _tmpl$2$7();
             _el$2.$$click = () => setSettings("headings", prev => prev.filter((h, i) => i !== props.index));
             return _el$2;
           })()];
@@ -10221,7 +10573,7 @@ function HeadingsSettings(props) {
 }
 delegateEvents(["input", "click"]);
 
-const _tmpl$$8 = /*#__PURE__*/template(`<code></code>`),
+const _tmpl$$8 = /*#__PURE__*/template(`<code>`),
   _tmpl$2$6 = /*#__PURE__*/template(`<br>`);
 function ListItemTreeDemo(props) {
   const [settings] = useSettingsContext();
@@ -10237,14 +10589,14 @@ function ListItemTreeDemo(props) {
         children: (listItem, i) => {
           const indentationWithToken = () => `${NON_BREAKING_SPACE.repeat(i() * 2)}- `;
           return [(() => {
-            const _el$ = _tmpl$$8.cloneNode(true);
+            const _el$ = _tmpl$$8();
             insert(_el$, indentationWithToken, null);
             insert(_el$, () => props.placeholderService.resolve(listItem.text, {
               obsidianTasksCompletedDateFormat: listItem.obsidianTasksCompletedDateFormat,
               dateFormat: listItem.dateFormat
             }), null);
             return _el$;
-          })(), _tmpl$2$6.cloneNode(true)];
+          })(), _tmpl$2$6()];
         }
       });
     }
@@ -10252,7 +10604,7 @@ function ListItemTreeDemo(props) {
 }
 
 const _tmpl$$7 = /*#__PURE__*/template(`<input type="text">`),
-  _tmpl$2$5 = /*#__PURE__*/template(`<button>Delete</button>`);
+  _tmpl$2$5 = /*#__PURE__*/template(`<button>Delete`);
 function ListItemsSettings(props) {
   const [, setSettings] = useSettingsContext();
   const listItemLevel = () => props.index + 1;
@@ -10267,7 +10619,7 @@ function ListItemsSettings(props) {
         name: "List item text",
         get children() {
           return [(() => {
-            const _el$ = _tmpl$$7.cloneNode(true);
+            const _el$ = _tmpl$$7();
             _el$.$$input = ({
               currentTarget: {
                 value
@@ -10278,7 +10630,7 @@ function ListItemsSettings(props) {
             createRenderEffect(() => _el$.value = props.listItem.text);
             return _el$;
           })(), (() => {
-            const _el$2 = _tmpl$2$5.cloneNode(true);
+            const _el$2 = _tmpl$2$5();
             _el$2.$$click = () => setSettings("listItems", prev => prev.filter((h, i) => i !== props.index));
             return _el$2;
           })()];
@@ -10346,7 +10698,7 @@ function ListItemsSettings(props) {
 }
 delegateEvents(["input", "click"]);
 
-const _tmpl$$6 = /*#__PURE__*/template(`<button></button>`);
+const _tmpl$$6 = /*#__PURE__*/template(`<button>`);
 function ButtonSetting(props) {
   return createComponent(BaseSetting, {
     get name() {
@@ -10359,7 +10711,7 @@ function ButtonSetting(props) {
       return props.class;
     },
     get children() {
-      const _el$ = _tmpl$$6.cloneNode(true);
+      const _el$ = _tmpl$$6();
       _el$.$$click = e => props.onClick(e);
       insert(_el$, () => props.buttonText);
       return _el$;
@@ -10368,8 +10720,8 @@ function ButtonSetting(props) {
 }
 delegateEvents(["click"]);
 
-const _tmpl$$5 = /*#__PURE__*/template(`<b></b>`),
-  _tmpl$2$4 = /*#__PURE__*/template(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide lucide-clipboard-copy"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path><path d="M16 4h2a2 2 0 0 1 2 2v4"></path><path d="M21 14H11"></path><path d="m15 10-4 4 4 4"></path></svg>`);
+const _tmpl$$5 = /*#__PURE__*/template(`<b>`),
+  _tmpl$2$4 = /*#__PURE__*/template(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide lucide-clipboard-copy"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path><path d="M16 4h2a2 2 0 0 1 2 2v4"></path><path d="M21 14H11"></path><path d="m15 10-4 4 4 4">`);
 function PlaceholdersDescription(props) {
   const mergedProps = mergeProps({
     extraPlaceholders: []
@@ -10377,11 +10729,11 @@ function PlaceholdersDescription(props) {
   const sourceFileName = () => mergedProps.placeholderResolver.resolve(placeholders.ACTIVE_FILE_NEW);
   const sourceFilePath = () => mergedProps.placeholderResolver.resolve(placeholders.ACTIVE_FILE_PATH);
   const placeholdersWithDesc = () => [[placeholders.DATE, "resolves to the current date in any format"], [placeholders.ACTIVE_FILE_NEW, ["for the currently open file it resolves to ", (() => {
-    const _el$ = _tmpl$$5.cloneNode(true);
+    const _el$ = _tmpl$$5();
     insert(_el$, sourceFileName);
     return _el$;
   })()]], [placeholders.ACTIVE_FILE_PATH, ["for the currently open file it resolves to ", (() => {
-    const _el$2 = _tmpl$$5.cloneNode(true);
+    const _el$2 = _tmpl$$5();
     insert(_el$2, sourceFilePath);
     return _el$2;
   })()]], [placeholders.OBSIDIAN_TASKS_COMPLETED_DATE, "obsidian-tasks completed date (✅ 2023-03-20); if the task doesn't have one, defaults to today"], ...mergedProps.extraPlaceholders];
@@ -10390,7 +10742,7 @@ function PlaceholdersDescription(props) {
     header: "Placeholders you can use",
     collapsible: true,
     get headerIcon() {
-      return _tmpl$2$4.cloneNode(true);
+      return _tmpl$2$4();
     },
     get children() {
       return createComponent(For, {
@@ -10412,7 +10764,41 @@ function PlaceholdersDescription(props) {
   });
 }
 
-const _tmpl$$4 = /*#__PURE__*/template(`<textarea></textarea>`);
+const _tmpl$$4 = /*#__PURE__*/template(`<select class="dropdown">`),
+  _tmpl$2$3 = /*#__PURE__*/template(`<option>`);
+function DropDownSetting(props) {
+  return createComponent(BaseSetting, {
+    get name() {
+      return props.name;
+    },
+    get description() {
+      return props.description;
+    },
+    get ["class"]() {
+      return props.class;
+    },
+    get children() {
+      const _el$ = _tmpl$$4();
+      _el$.$$input = event => props.onInput(event);
+      insert(_el$, createComponent(For, {
+        get each() {
+          return props.options;
+        },
+        children: value => (() => {
+          const _el$2 = _tmpl$2$3();
+          _el$2.value = value;
+          insert(_el$2, value);
+          createRenderEffect(() => _el$2.selected = props.value === value);
+          return _el$2;
+        })()
+      }));
+      return _el$;
+    }
+  });
+}
+delegateEvents(["input"]);
+
+const _tmpl$$3 = /*#__PURE__*/template(`<textarea>`);
 function TextAreaSetting(props) {
   return createComponent(BaseSetting, {
     get name() {
@@ -10425,7 +10811,7 @@ function TextAreaSetting(props) {
       return classnames("mod-text", props.class);
     },
     get children() {
-      const _el$ = _tmpl$$4.cloneNode(true);
+      const _el$ = _tmpl$$3();
       _el$.$$input = event => props.onInput(event);
       setAttribute(_el$, "spellcheck", false);
       createRenderEffect(_p$ => {
@@ -10445,8 +10831,8 @@ function TextAreaSetting(props) {
 }
 delegateEvents(["input"]);
 
-const _tmpl$$3 = /*#__PURE__*/template(`<ul class="archiver-status-examples"></ul>`),
-  _tmpl$2$3 = /*#__PURE__*/template(`<li><code>- [<!>] task</code></li>`);
+const _tmpl$$2 = /*#__PURE__*/template(`<ul class="archiver-status-examples">`),
+  _tmpl$2$2 = /*#__PURE__*/template(`<li><code>- [<!>] task`);
 function dedupe(value) {
   return [...new Set(value.split(""))].join("");
 }
@@ -10460,13 +10846,13 @@ function Rule(props) {
   const updateRule = newValues => setSettings("rules", (rule, i) => i === props.index(), newValues);
   const deleteRule = () => setSettings("rules", prev => prev.filter((rule, i) => i !== props.index()));
   const renderStatusExamples = () => ["These tasks will be matched:", (() => {
-    const _el$ = _tmpl$$3.cloneNode(true);
+    const _el$ = _tmpl$$2();
     insert(_el$, createComponent(For, {
       get each() {
         return dedupedStatuses().split("");
       },
       children: status => (() => {
-        const _el$2 = _tmpl$2$3.cloneNode(true),
+        const _el$2 = _tmpl$2$2(),
           _el$3 = _el$2.firstChild,
           _el$4 = _el$3.firstChild,
           _el$6 = _el$4.nextSibling;
@@ -10518,63 +10904,107 @@ function Rule(props) {
                 pathPatterns: value
               });
             },
-            name: "And the file matches one of patterns",
+            name: "And the file path matches one of patterns",
             get value() {
               return pathPatterns() || "";
             },
             description: "Add a pattern per line. No patterns means all files will match",
-            placeholder: "path/to/project\n.*tasks",
-            inputClass: "archiver-rule-paths"
-          })];
-        }
-      }), createComponent(SettingGroup, {
-        get children() {
-          return [createComponent(TextAreaSetting, {
+            placeholder: "path/to/project\\n.*tasks",
+            inputClass: "archiver-rule-paths",
+            "class": "wide-input"
+          }), createComponent(TextAreaSetting, {
             onInput: ({
               currentTarget: {
                 value
               }
-            }) => updateRule({
-              defaultArchiveFileName: value
-            }),
-            name: "Then move it to file",
+            }) => {
+              updateRule({
+                textPatterns: value
+              });
+            },
+            name: "And the task text matches one of patterns",
             get value() {
-              return archivePath();
+              return ruleSettings().textPatterns || "";
             },
-            get placeholder() {
-              return `path/to/${placeholders.ACTIVE_FILE_NEW} archive`;
-            }
-          }), createComponent(PlaceholdersDescription, {
-            get placeholderResolver() {
-              return props.placeholderResolver;
-            }
-          }), createComponent(SettingGroup, {
-            get headerIcon() {
-              return createComponent(Cog, {});
+            description: "Add a pattern per line. No patterns means all tasks will match",
+            placeholder: "every .+",
+            inputClass: "archiver-rule-paths",
+            "class": "wide-input"
+          })];
+        }
+      }), createComponent(SettingGroup, {
+        get children() {
+          return [createComponent(DropDownSetting, {
+            name: "Then",
+            get value() {
+              return ruleSettings().ruleAction;
             },
-            header: "Configure variables",
-            collapsible: true,
+            onInput: ({
+              currentTarget: {
+                value
+              }
+            }) => {
+              updateRule({
+                ruleAction: value
+              });
+            },
+            get options() {
+              return [RuleAction.MOVE_TO_FILE, RuleAction.DELETE];
+            }
+          }), createComponent(Show, {
+            get when() {
+              return ruleSettings().ruleAction !== RuleAction.DELETE;
+            },
             get children() {
-              return createComponent(TextSetting, {
+              return [createComponent(TextSetting, {
                 onInput: ({
                   currentTarget: {
                     value
                   }
                 }) => updateRule({
-                  dateFormat: value
+                  defaultArchiveFileName: value
                 }),
-                name: "Date format",
-                get description() {
-                  return createComponent(DateFormatDescription, {
-                    get dateFormat() {
+                name: "File path",
+                get value() {
+                  return archivePath();
+                },
+                get placeholder() {
+                  return `path/to/${placeholders.ACTIVE_FILE_NEW} archive`;
+                },
+                "class": "wide-input"
+              }), createComponent(PlaceholdersDescription, {
+                get placeholderResolver() {
+                  return props.placeholderResolver;
+                }
+              }), createComponent(SettingGroup, {
+                get headerIcon() {
+                  return createComponent(Cog, {});
+                },
+                header: "Configure variables",
+                collapsible: true,
+                get children() {
+                  return createComponent(TextSetting, {
+                    onInput: ({
+                      currentTarget: {
+                        value
+                      }
+                    }) => updateRule({
+                      dateFormat: value
+                    }),
+                    name: "Date format",
+                    get description() {
+                      return createComponent(DateFormatDescription, {
+                        get dateFormat() {
+                          return dateFormat();
+                        }
+                      });
+                    },
+                    get value() {
                       return dateFormat();
                     }
                   });
-                },
-                get value() {
-                  return dateFormat();
                 }
-              });
+              })];
             }
           })];
         }
@@ -10586,8 +11016,8 @@ function Rule(props) {
   });
 }
 
-const _tmpl$$2 = /*#__PURE__*/template(`<div><input type="checkbox" tabindex="0"></div>`),
-  _tmpl$2$2 = /*#__PURE__*/template(`<div class="archiver-setting-sub-item"></div>`);
+const _tmpl$$1 = /*#__PURE__*/template(`<div><input type="checkbox" tabindex="0">`),
+  _tmpl$2$1 = /*#__PURE__*/template(`<div class="archiver-setting-sub-item">`);
 function ToggleSetting(props) {
   return [createComponent(BaseSetting, {
     get name() {
@@ -10600,7 +11030,7 @@ function ToggleSetting(props) {
       return classnames("mod-toggle", props.class);
     },
     get children() {
-      const _el$ = _tmpl$$2.cloneNode(true);
+      const _el$ = _tmpl$$1();
       _el$.$$click = e => props.onClick(e);
       createRenderEffect(() => className(_el$, classnames("checkbox-container", {
         "is-enabled": props.value
@@ -10613,7 +11043,7 @@ function ToggleSetting(props) {
     },
     keyed: true,
     get children() {
-      const _el$2 = _tmpl$2$2.cloneNode(true);
+      const _el$2 = _tmpl$2$1();
       insert(_el$2, () => props.children);
       return _el$2;
     }
@@ -10707,48 +11137,14 @@ function TaskPatternSettings() {
   });
 }
 
-const _tmpl$$1 = /*#__PURE__*/template(`<select class="dropdown"></select>`),
-  _tmpl$2$1 = /*#__PURE__*/template(`<option></option>`);
-function DropDownSetting(props) {
-  return createComponent(BaseSetting, {
-    get name() {
-      return props.name;
-    },
-    get description() {
-      return props.description;
-    },
-    get ["class"]() {
-      return props.class;
-    },
-    get children() {
-      const _el$ = _tmpl$$1.cloneNode(true);
-      _el$.$$input = event => props.onInput(event);
-      insert(_el$, createComponent(For, {
-        get each() {
-          return props.options;
-        },
-        children: value => (() => {
-          const _el$2 = _tmpl$2$1.cloneNode(true);
-          _el$2.value = value;
-          insert(_el$2, value);
-          createRenderEffect(() => _el$2.selected = props.value === value);
-          return _el$2;
-        })()
-      }));
-      return _el$;
-    }
-  });
-}
-delegateEvents(["input"]);
-
-const _tmpl$ = /*#__PURE__*/template(`<h1>Archiver Settings</h1>`),
-  _tmpl$2 = /*#__PURE__*/template(`<h2>Rules</h2>`),
-  _tmpl$3 = /*#__PURE__*/template(`<b></b>`),
-  _tmpl$4 = /*#__PURE__*/template(`<code>- [x] water the cat #task </code>`);
+const _tmpl$ = /*#__PURE__*/template(`<h1>Archiver Settings`),
+  _tmpl$2 = /*#__PURE__*/template(`<h2>Rules`),
+  _tmpl$3 = /*#__PURE__*/template(`<b>`),
+  _tmpl$4 = /*#__PURE__*/template(`<code>- [x] water the cat #task `);
 function ArchiverSettingsPage(props) {
   const [settings, setSettings] = useSettingsContext();
   const replacementResult = () => settings.textReplacement.replacementTest.replace(new RegExp(settings.textReplacement.regex), settings.textReplacement.replacement);
-  return [_tmpl$.cloneNode(true), createComponent(DropDownSetting, {
+  return [_tmpl$(), createComponent(DropDownSetting, {
     onInput: ({
       currentTarget: {
         value
@@ -10841,7 +11237,7 @@ function ArchiverSettingsPage(props) {
             name: "Try out your replacement",
             get description() {
               return ["Replacement result: ", (() => {
-                const _el$3 = _tmpl$3.cloneNode(true);
+                const _el$3 = _tmpl$3();
                 insert(_el$3, replacementResult);
                 return _el$3;
               })()];
@@ -10879,72 +11275,97 @@ function ArchiverSettingsPage(props) {
         },
         keyed: true,
         get children() {
-          return [createComponent(TextAreaSetting, {
+          return [createComponent(DropDownSetting, {
+            name: "What kind of file to use?",
+            description: `If you pick "Daily note", your daily note template is going to be used when creating it`,
+            get options() {
+              return [ArchiveFileType.CUSTOM, ArchiveFileType.DAILY];
+            },
+            get value() {
+              return settings.separateFileType;
+            },
             onInput: ({
               currentTarget: {
                 value
               }
             }) => {
               setSettings({
-                defaultArchiveFileName: value
+                separateFileType: value
               });
-            },
-            name: "File name",
-            get value() {
-              return settings.defaultArchiveFileName;
             }
-          }), createComponent(PlaceholdersDescription, {
-            get placeholderResolver() {
-              return props.placeholderService;
-            }
-          }), createComponent(SettingGroup, {
-            get headerIcon() {
-              return createComponent(Cog, {});
+          }), createComponent(Show, {
+            get when() {
+              return settings.separateFileType === ArchiveFileType.CUSTOM;
             },
-            header: "Configure variables",
-            collapsible: true,
             get children() {
-              return [createComponent(TextSetting, {
+              return [createComponent(TextAreaSetting, {
                 onInput: ({
                   currentTarget: {
                     value
                   }
                 }) => {
                   setSettings({
-                    dateFormat: value
+                    defaultArchiveFileName: value
                   });
                 },
-                name: "Date format",
-                get description() {
-                  return createComponent(DateFormatDescription, {
-                    get dateFormat() {
+                name: "File name",
+                get value() {
+                  return settings.defaultArchiveFileName;
+                }
+              }), createComponent(PlaceholdersDescription, {
+                get placeholderResolver() {
+                  return props.placeholderService;
+                }
+              }), createComponent(SettingGroup, {
+                get headerIcon() {
+                  return createComponent(Cog, {});
+                },
+                header: "Configure variables",
+                collapsible: true,
+                get children() {
+                  return [createComponent(TextSetting, {
+                    onInput: ({
+                      currentTarget: {
+                        value
+                      }
+                    }) => {
+                      setSettings({
+                        dateFormat: value
+                      });
+                    },
+                    name: "Date format",
+                    get description() {
+                      return createComponent(DateFormatDescription, {
+                        get dateFormat() {
+                          return settings.dateFormat;
+                        }
+                      });
+                    },
+                    get value() {
                       return settings.dateFormat;
                     }
-                  });
-                },
-                get value() {
-                  return settings.dateFormat;
-                }
-              }), createComponent(TextSetting, {
-                onInput: ({
-                  currentTarget: {
-                    value
-                  }
-                }) => {
-                  setSettings({
-                    obsidianTasksCompletedDateFormat: value
-                  });
-                },
-                name: "obsidian-tasks completed date format",
-                get description() {
-                  return createComponent(DateFormatDescription, {
-                    get dateFormat() {
+                  }), createComponent(TextSetting, {
+                    onInput: ({
+                      currentTarget: {
+                        value
+                      }
+                    }) => {
+                      setSettings({
+                        obsidianTasksCompletedDateFormat: value
+                      });
+                    },
+                    name: "obsidian-tasks completed date format",
+                    get description() {
+                      return createComponent(DateFormatDescription, {
+                        get dateFormat() {
+                          return settings.obsidianTasksCompletedDateFormat;
+                        }
+                      });
+                    },
+                    get value() {
                       return settings.obsidianTasksCompletedDateFormat;
                     }
-                  });
-                },
-                get value() {
-                  return settings.obsidianTasksCompletedDateFormat;
+                  })];
                 }
               })];
             }
@@ -11081,7 +11502,7 @@ function ArchiverSettingsPage(props) {
             name: "Metadata to append",
             get description() {
               return ["Current result:", " ", (() => {
-                const _el$4 = _tmpl$4.cloneNode(true);
+                const _el$4 = _tmpl$4();
                   _el$4.firstChild;
                 insert(_el$4, () => props.placeholderService.resolve(settings.additionalMetadataBeforeArchiving.metadata, {
                   dateFormat: settings.additionalMetadataBeforeArchiving.dateFormat
@@ -11091,7 +11512,8 @@ function ArchiverSettingsPage(props) {
             },
             get value() {
               return settings.additionalMetadataBeforeArchiving.metadata;
-            }
+            },
+            "class": "wide-input"
           }), createComponent(PlaceholdersDescription, {
             get placeholderResolver() {
               return props.placeholderService;
@@ -11131,7 +11553,7 @@ function ArchiverSettingsPage(props) {
         }
       })];
     }
-  }), _tmpl$2.cloneNode(true), createComponent(ButtonSetting, {
+  }), _tmpl$2(), createComponent(ButtonSetting, {
     onClick: () => setSettings("rules", prev => [...prev, Object.assign(Object.assign({}, createDefaultRule(settings)), {
       archiveToSeparateFile: true,
       defaultArchiveFileName: ""
@@ -11272,13 +11694,6 @@ class ObsidianTaskArchiver extends obsidian.Plugin {
             },
         });
         this.addCommand({
-            id: "turn-list-items-into-headings",
-            name: "Turn list items at this level into headings",
-            editorCallback: (editor) => {
-                this.listToHeadingFeature.turnListItemsIntoHeadings(editor);
-            },
-        });
-        this.addCommand({
             id: "toggle-done-and-archive",
             name: "Toggle task done and archive it",
             editorCallback: (editor) => {
@@ -11305,7 +11720,6 @@ class ObsidianTaskArchiver extends obsidian.Plugin {
         const metadataService = new MetadataService(placeholderService, this.settings);
         this.archiveFeature = new ArchiveFeature(this.app.vault, this.app.workspace, parser, listItemService, taskTestingService, placeholderService, textReplacementService, metadataService, this.settings);
         this.taskListSortFeature = new TaskListSortFeature(parser, taskTestingService, this.settings);
-        this.listToHeadingFeature = new ListToHeadingFeature(parser, this.settings);
         return { placeholderService };
     }
     createCheckCallbackForPreviewAndEditView(callback) {

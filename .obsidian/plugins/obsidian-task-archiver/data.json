@@ -9,6 +9,7 @@
   "archiveAllCheckedTaskTypes": false,
   "archiveHeadingDepth": 2,
   "archiveToSeparateFile": false,
+  "separateFileType": "Custom note",
   "obsidianTasksCompletedDateFormat": "YYYY-MM-DD",
   "archiveUnderHeading": true,
   "dateFormat": "YYYY-MM-DD",
