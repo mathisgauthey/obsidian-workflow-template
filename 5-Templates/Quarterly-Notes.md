@@ -2,10 +2,10 @@
 title: <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>
 date: <% moment(tp.file.creation_date()).format("YYYY-MM-DD HH:mm:ss") %>
 lastmod: <% moment(tp.file.creation_date()).format("YYYY-MM-DD HH:mm:ss") %>
-categories: 
+categories:
 tags: quarterly-notes
-aliases: 
-share: false 
+aliases:
+share: false
 ---
 
 # <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>
@@ -25,38 +25,226 @@ tR += '\n';
 tR += '\n';
 tR += leftAngle;
 currentMoment.add(-1,'quarters');
-tR += '[[' + currentMoment.format('YYYY-[Q]Q') + ']]' + pipe;
+tR += '[[' + currentMoment.format('YYYY-[Q]Q|[Q]Q') + ']]' + pipe;
 currentMoment.add(1,'quarters');
-tR += currentMoment.format('YYYY-[Q]Q') + pipe;
+tR += currentMoment.format('[Q]Q') + pipe;
 currentMoment.add(1,'quarters');
-tR += '[[' + currentMoment.format('YYYY-[Q]Q') + ']]';
+tR += '[[' + currentMoment.format('YYYY-[Q]Q|[Q]Q') + ']]';
 currentMoment.add(-1,'quarters');
+tR += rightAngle;
+tR += '\n';
+tR += '\n';
+tR += leftAngle;
+tR += '[[' + currentMoment.format('YYYY-MM|MMMM') + ']]' + pipe;
+currentMoment.add(1,'months');
+tR += '[[' + currentMoment.format('YYYY-MM|MMMM') + ']]' + pipe;
+currentMoment.add(1,'months');
+tR += '[[' + currentMoment.format('YYYY-MM|MMMM') + ']]';
+currentMoment.add(1,'months');
 tR += rightAngle;
 %>
 
-> [!INFO]- Time left ⏱
-> ![[Time Left ⏱#Time Left ⏱]]
+## Dashboard 🗺️
 
-## Projects 🎯
+> [!CHECK]+ Projects 🎯
+>
+> ```tasks
+> not done
+> is not recurring
+> description includes ]]
+> (happens in <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>) OR (happens before <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>)
+> group by happens
+> ```
 
-```tasks
-not done
-path includes 2-Areas
-group by filename
-sort by happens
-(happens in <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>) OR (happens before <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>)
-```
+> [!CHECK]+ Tasks ✅
+>
+> ```tasks
+> not done
+> is not recurring
+> description does not include ]]
+> (happens in <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>) OR (happens before <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>)
+> group by happens
+> ```
 
-## Projects Graveyard 🪦
+> [!TODO]+ Recurring 🔁
+>
+> ```tasks
+> not done
+> is recurring
+> filter by function task.happens.moment?.isSameOrBefore('<% moment(tp.file.title, "YYYY-QQ").add(2,'month').format("YYYY-MM") %>', 'month') || false
+> group by happens
+> ```
 
-```tasks
-path includes 2-Areas
-group by filename
-sort by done
-done in <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>
-```
+> [!IMPORTANT]+ Next Actions 🏃
+>
+> ```tasks
+> not done
+> description does not include ]]
+> tags include #next
+> group by function task.tags.filter( (tag) => ! tag.includes("#next") )
+> ```
+
+> [!EXAMPLE]+ Upcoming Projects (by date) 🎯
+>
+> ```tasks
+> not done
+> description includes ]]
+> filename does not include Passions Backlog 🎮
+> (heading does not include Focus) AND (heading does not include Goals)
+> group by function (!task.happens.moment) ? '%%4%% *Undated*' : result = task.happens.moment.isBefore(moment(), 'day') ? '%%1%% ==Overdue==' : result = task.happens.moment.isSame(moment(), 'day') ? '%%2%% **Today**' : '%%3%% Future'
+> group by function task.happens.format("YYYY > Q[ - Quarter] > MM[ - ]MMMM > [Week] WW", task.priorityNameGroupText)
+> group by function task.happens.format("YYYY-MM-DD dddd")
+> ```
+
+> [!QUESTION]+ Waiting For 💤
+>
+> ```tasks
+> not done
+> description does not include ]]
+> tags include #waiting
+> group by filename
+> ```
+
+> [!BUG]+ Delegated 👷‍♂️
+>
+> ```tasks
+> not done
+> description does not include ]]
+> tags include #delegated
+> group by filename
+> ```
+
+> [!SUMMARY]+ Higher Focus 🔥 & Goals 🎯
+>
+> ```tasks
+> not done
+> (path includes -Daily-Notes) OR (path includes -Periodic-Notes)
+> (heading includes Focus) AND (heading includes Goals)
+> group by function '%%' + (task.heading.includes("Yearly Focus 🔥 & Goals 🎯") ? "1" : task.heading.includes("Quarterly Focus 🔥 & Goals 🎯") ? "2" : task.heading.includes("Monthly Focus 🔥 & Goals 🎯") ? "3" : task.heading.includes("Weekly Focus 🔥 & Goals 🎯") ? "4" : task.heading.includes("Daily Focus 🔥 & Goals 🎯") ? "5" : "6") + '%%' + task.heading + " > " + task.file.filenameWithoutExtension + " > " + task.tags
+> ```
+
+## Underground 🚇
+
+> [!EXAMPLE]+ Upcoming Projects (by priority) 🎯
+>
+> ```tasks
+> not done
+> description includes ]]
+> filename does not include Passions Backlog 🎮
+> (heading does not include Focus) AND (heading does not include Goals)
+> group by priority
+> ```
+
+> [!EXAMPLE]+ Upcoming Projects (by areas) 🎯
+>
+> ```tasks
+> not done
+> description includes ]]
+> filename does not include Passions Backlog 🎮
+> (heading does not include Focus) AND (heading does not include Goals)
+> group by filename
+> ```
+
+> [!INFO]+ Projects On Hold 🎯
+>
+> ```tasks
+> description includes ]]
+> status.type is NON_TASK
+> group by filename
+> ```
+
+> [!INFO]+ Tasks On Hold ✅
+>
+> ```tasks
+> description does not include ]]
+> status.type is NON_TASK
+> group by filename
+> ```
+
+> [!INFO]+ Unplanned Projects 🎯
+>
+> ```tasks
+> not done
+> description includes ]]
+> filename does not include Passions Backlog 🎮
+> (heading does not include Focus) AND (heading does not include Goals)
+> (status.type is TODO) AND (no happens date)
+> group by filename
+> sort by created
+> ```
+
+> [!INFO]+ Unplanned One-Off Tasks ✅
+>
+> ```tasks
+> not done
+> is not recurring
+> description does not include ]]
+> path includes -Daily-Notes
+> (heading does not include Focus) AND (heading does not include Goals)
+> (status.type is TODO) AND (no tags) AND (no happens date)
+> group by filename
+> sort by created
+> ```
+
+> [!INFO]+ Unplanned Projects Tasks ✅
+>
+> ```tasks
+> not done
+> is not recurring
+> description does not include ]]
+> (path does not include -Daily-Notes) AND (path does not include -Periodic-Notes)
+> filename does not include Passions Backlog 🎮
+> (status.type is TODO) AND (no tags) AND (no happens date)
+> group by filename
+> sort by created
+> ```
+
+## Logs 🪵
+
+> [!NOTE]+ Projects Created ➕
+>
+> ```tasks
+> not done
+> is not recurring
+> description includes ]]
+> created on <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>
+> group by created
+> ```
+
+> [!NOTE]+ Tasks Created ➕
+>
+> ```tasks
+> not done
+> is not recurring
+> description does not include ]]
+> created on <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>
+> group by created
+> ```
+
+> [!MISSING]+ Projects Graveyard 🪦
+>
+> ```tasks
+> description includes ]]
+> is not recurring
+> done in <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>
+> group by done
+> ```
+
+> [!MISSING]+ Tasks Log ❌
+>
+> ```tasks
+> description does not include ]]
+> is not recurring
+> done in <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>
+> group by done
+> ```
+
+## Quarterly Focus 🔥 & Goals 🎯
+
+- `Add some goals from yearly goals.`
 
 ## Journal 📔
 
-An Interesting Title : 
+An Interesting Title :
 
+<% await tp.file.move("/-Periodic-Notes/" + tp.file.title) %>

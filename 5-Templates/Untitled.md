@@ -1,22 +1,12 @@
 ---
-title: Areas
+title: <% tp.file.title %>
 date: <% moment(tp.file.creation_date()).format("YYYY-MM-DD HH:mm:ss") %>
 lastmod: <% moment(tp.file.creation_date()).format("YYYY-MM-DD HH:mm:ss") %>
 categories: 
-tags: areas
+tags: 
 aliases: 
 share: false 
 ---
 
-# Areas
-
-## Projects 🎯
-
-
-
-## Recurring 🔁
-
-
-
-## Archives 🗃️
+# <% tp.file.title %>
 
