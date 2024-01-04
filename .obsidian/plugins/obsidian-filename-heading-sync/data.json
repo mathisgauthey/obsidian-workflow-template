@@ -1,7 +1,10 @@
 {
   "userIllegalSymbols": [],
   "ignoredFiles": {},
-  "ignoreRegex": "Templates|Workout_Log|Media Backlog",
-  "useFileOpenHook": true,
-  "useFileSaveHook": true
+  "ignoreRegex": "_Sources|5-Templates|Passions Backlog",
+  "useFileOpenHook": false,
+  "useFileSaveHook": true,
+  "newHeadingStyle": "Prefix",
+  "replaceStyle": false,
+  "underlineString": "==="
 }
