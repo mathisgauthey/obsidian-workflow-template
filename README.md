@@ -2,9 +2,9 @@
 
 ## Introduction
 
-![image](https://github.com/mathisgauthey/obsidian-workflow-template/assets/46576952/c2ecf1fa-2e4a-494c-a158-9b68a5c7a362)
+![image](_Media/24-01-04_15-52-03_Obsidian.png)
 
-As I promised to quite a few people on different places, I’m releasing a [full blown guide](https://mathisgauthey.github.io/my-complete-obsidian-workflow-to-manage-my-life/) of my Obsidian workflow. It has many cool features that I’ve seen people struggling with online :
+As I promised to quite a few people on different places, I’m releasing my Obsidian workflow template. It has many cool features that I’ve seen people struggling with online :
 
 1. Tasks and project management with journaling, workout logging and media tracking. Using daily and periodic notes.
 2. Read-it-later with automated conversion to markdown and import inside your vault. Meaning all your past knowledge is inside Obsidian, available with a simple search alongside your notes.
@@ -25,17 +25,17 @@ Obviously, it is merely just a starting point, with Obsidian you can (and you al
 - 🎮 Media backlog Kanban board for tracking books, shows, movies or video games backlog, consuming media at the right pace, and archiving what you do. All without proprietary online services that hold you data.
 - 🔗 Read-it-later / bookmark manager with automated markdown conversion for offline storage inside your vault using [Omnivore app](https://omnivore.app/). That means easy search for knowledge inside your vault across sources and personal notes.
 - 📝 [Zettelkasten note-taking](https://everlaab.com/methode-zettelkasten-comment-prendre-des-notes-utiles/) on a flat structure inside `3-Resources` folder.
-	1. 📎 Import sources automatically using [obsidian-omnivore](https://github.com/omnivore-app/obsidian-omnivore) plugin for an automatic markdown conversion of a webpage or document online or manually from a file or using [markdownload](https://github.com/deathau/markdownload).
-	2. Highlight and take reference notes using [Omnivore app](https://omnivore.app/) or directly inside your vault using a simple markdown file.
-	3. Write literature notes to summarise the source informations.
-	4. Write permanent notes from key concepts directly inside literature notes using wiki-links.
+    1. 📎 Import sources automatically using [obsidian-omnivore](https://github.com/omnivore-app/obsidian-omnivore) plugin for an automatic markdown conversion of a webpage or document online or manually from a file or using [markdownload](https://github.com/deathau/markdownload).
+    2. Highlight and take reference notes using [Omnivore app](https://omnivore.app/) or directly inside your vault using a simple markdown file.
+    3. Write literature notes to summarise the source informations.
+    4. Write permanent notes from key concepts directly inside literature notes using wiki-links.
 - 🌐 One click upload of file and attachments to a [Hugo](https://gohugo.io/) website hosted on [Github Pages](https://pages.github.com/) thanks to [obsidian-github-publisher](https://github.com/ObsidianPublisher/obsidian-github-publisher) plugin.
 
-## How to use
+## Documentation
 
-Simply clone the repository and open it as an obsidian vault !
+The documentation is available [here](https://mathisgauthey.github.io/obsidian-workflow-template-docs/).
 
-→ I encourage you to take a look at the 2023-08-06 daily note to see the task capabilities in action. There's many other examples that you could explore
+If you want to modify it, feel free to help in the [docs repository](https://github.com/mathisgauthey/obsidian-workflow-template-docs).
 
 ## Support me
 
