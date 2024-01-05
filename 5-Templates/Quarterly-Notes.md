@@ -230,13 +230,29 @@ tR += rightAngle;
 > group by done
 > ```
 
-> [!MISSING]+ Tasks Log ❌
+> [!MISSING]+ Tasks Graveyard 🪦
 >
 > ```tasks
 > description does not include ]]
 > is not recurring
 > done in <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>
 > group by done
+> ```
+
+> [!MISSING]+ Projects Cancelled ❌
+>
+> ```tasks
+> description includes ]]
+> cancelled on <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>
+> group by filename
+> ```
+
+> [!MISSING]+ Tasks Cancelled ❌
+>
+> ```tasks
+> description does not include ]]
+> cancelled on <% moment(tp.file.title, "YYYY-[Q]Q").format("YYYY-[Q]Q") %>
+> group by filename
 > ```
 
 ## Quarterly Focus 🔥 & Goals 🎯

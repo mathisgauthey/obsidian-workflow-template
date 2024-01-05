@@ -243,13 +243,29 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 > group by done
 > ```
 
-> [!MISSING]+ Tasks Log ❌
+> [!MISSING]+ Tasks Graveyard 🪦
 >
 > ```tasks
 > description does not include ]]
 > is not recurring
 > done in <% moment(tp.file.title, "GGGG-[W]WW").format("GGGG-[W]WW") %>
 > group by done
+> ```
+
+> [!MISSING]+ Projects Cancelled ❌
+>
+> ```tasks
+> description includes ]]
+> cancelled on <% moment(tp.file.title, "GGGG-[W]WW").format("GGGG-[W]WW") %>
+> group by filename
+> ```
+
+> [!MISSING]+ Tasks Cancelled ❌
+>
+> ```tasks
+> description does not include ]]
+> cancelled on <% moment(tp.file.title, "GGGG-[W]WW").format("GGGG-[W]WW") %>
+> group by filename
 > ```
 
 ## Weekly Focus 🔥 & Goals 🎯

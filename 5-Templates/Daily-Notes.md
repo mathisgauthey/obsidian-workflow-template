@@ -199,7 +199,7 @@ filter: "#Inbox"
 > group by filename
 > ```
 
-> [!MISSING]+ Tasks Log ❌
+> [!MISSING]+ Tasks Graveyard 🪦
 >
 > ```tasks
 > description does not include ]]
@@ -207,7 +207,25 @@ filter: "#Inbox"
 > group by filename
 > ```
 
+> [!MISSING]+ Projects Cancelled ❌
+>
+> ```tasks
+> description includes ]]
+> cancelled on <% moment(tp.file.title, "YYYY-MM-DD").format("YYYY-MM-DD") %>
+> group by filename
+> ```
+
+> [!MISSING]+ Tasks Cancelled ❌
+>
+> ```tasks
+> description does not include ]]
+> cancelled on <% moment(tp.file.title, "YYYY-MM-DD").format("YYYY-MM-DD") %>
+> group by filename
+> ```
+
 ## Daily Focus 🔥 & Goals 🎯
+
+
 
 ## Journal 📔
 
