@@ -44,8 +44,7 @@ tR += rightAngle;
 > not done
 > (happens on or before <% moment(tp.file.title, "YYYY-MM-DD").format("YYYY-MM-DD") %>) OR (status.type is IN_PROGRESS)
 > (heading does not include Focus) AND (heading does not include Goals)
-> group by function (!task.description.includes("[[")) ? 'Tasks' : 'Projects'
-> group by function (task.happens.moment?.isBefore("<% moment(tp.file.title, "YYYY-MM-DD").format("YYYY-MM-DD") %>", 'day')) ? 'Overdue' : 'Today'
+> group by function (task.description.includes("[[")) ? '%%1%% Projects' : result = !task.isRecurring ? '%%2%% Tasks' : '%%3%% Recurring Tasks'
 > ```
 
 > [!IMPORTANT]+ Short Next Actions 🏃
