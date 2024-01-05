@@ -1,5 +1,5 @@
 {
-  "globalQuery": "path does not include _Sources\npath does not include 4-Archives\npath does not include 5-Templates",
+  "globalQuery": "path does not include _Sources\npath does not include 5-Templates",
   "globalFilter": "",
   "removeGlobalFilter": true,
   "taskFormat": "tasksPluginEmoji",
