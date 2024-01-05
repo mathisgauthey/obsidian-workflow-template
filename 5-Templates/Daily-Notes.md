@@ -53,7 +53,7 @@ tR += rightAngle;
 > ```tasks
 > not done
 > description does not include ]]
-> tags include #next 
+> tags include #next
 > short mode
 > group by function task.tags.filter( (tag) => tag.includes("#next") )
 > ```
@@ -108,7 +108,7 @@ filter: "#Inbox"
 > not done
 > is recurring
 > filter by function task.happens.moment?.isSameOrBefore('<% moment(tp.file.title, "YYYY-MM-DD").format("YYYY-MM-DD") %>', 'day') || false
-> group by filename 
+> group by filename
 > ```
 
 > [!IMPORTANT]+ Next Actions 🏃
