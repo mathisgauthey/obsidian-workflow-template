@@ -100,7 +100,7 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 > filename does not include Passions Backlog 🎮
 > (heading does not include Focus) AND (heading does not include Goals)
 > group by function (!task.happens.moment) ? '%%4%% *Undated*' : result = task.happens.moment.isBefore(moment(), 'day') ? '%%1%% ==Overdue==' : result = task.happens.moment.isSame(moment(), 'day') ? '%%2%% **Today**' : '%%3%% Future'
-> group by function task.happens.format("YYYY > Q[ - Quarter] > MM[ - ]MMMM > [Week] WW", task.priorityNameGroupText)
+> group by function task.happens.format("YYYY > 0Q[ - Quarter] > MM[ - ]MMMM > [Week] WW", task.priorityNameGroupText)
 > group by function task.happens.format("YYYY-MM-DD dddd")
 > ```
 
