@@ -25,8 +25,8 @@ const calendarData = {
     },
     showCurrentDayBorder: true, // (optional) defaults to true
     defaultEntryIntensity: 4,   // (optional) defaults to 4
-    //intensityScaleStart: 1,    // (optional) defaults to lowest value passed to entries.intensity
-    //intensityScaleEnd: 5,     // (optional) defaults to highest value passed to entries.intensity
+    intensityScaleStart: 1,    // (optional) defaults to lowest value passed to entries.intensity
+    intensityScaleEnd: 5,     // (optional) defaults to highest value passed to entries.intensity
     entries: [],                // (required) populated in the DataviewJS loop below
 }
 
