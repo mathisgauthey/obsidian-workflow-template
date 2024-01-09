@@ -87,6 +87,7 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > not done
+> is not recurring
 > description does not include ]]
 > tags include #next
 > group by function task.tags.filter( (tag) => ! tag.includes("#next") )
@@ -96,6 +97,7 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > not done
+> is not recurring
 > description includes ]]
 > filename does not include Passions Backlog 🎮
 > (heading does not include Focus) AND (heading does not include Goals)
@@ -108,6 +110,7 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > not done
+> is not recurring
 > description does not include ]]
 > tags include #waiting
 > group by filename
@@ -117,6 +120,7 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > not done
+> is not recurring
 > description does not include ]]
 > tags include #delegated
 > group by filename
@@ -126,6 +130,7 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > not done
+> is not recurring
 > (path includes -Daily-Notes) OR (path includes -Periodic-Notes)
 > (heading includes Focus) AND (heading includes Goals)
 > group by function '%%' + (task.heading.includes("Yearly Focus 🔥 & Goals 🎯") ? "1" : task.heading.includes("Quarterly Focus 🔥 & Goals 🎯") ? "2" : task.heading.includes("Monthly Focus 🔥 & Goals 🎯") ? "3" : task.heading.includes("Weekly Focus 🔥 & Goals 🎯") ? "4" : task.heading.includes("Daily Focus 🔥 & Goals 🎯") ? "5" : "6") + '%%' + task.heading + " > " + task.file.filenameWithoutExtension + " > " + task.tags
@@ -137,6 +142,7 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > not done
+> is not recurring
 > description includes ]]
 > filename does not include Passions Backlog 🎮
 > (heading does not include Focus) AND (heading does not include Goals)
@@ -147,6 +153,7 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > not done
+> is not recurring
 > description includes ]]
 > filename does not include Passions Backlog 🎮
 > (heading does not include Focus) AND (heading does not include Goals)
@@ -156,16 +163,16 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 > [!INFO]+ Projects On Hold 🎯
 >
 > ```tasks
-> description includes ]]
 > status.type is NON_TASK
+> description includes ]]
 > group by filename
 > ```
 
 > [!INFO]+ Tasks On Hold ✅
 >
 > ```tasks
-> description does not include ]]
 > status.type is NON_TASK
+> description does not include ]]
 > group by filename
 > ```
 
@@ -185,7 +192,6 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > not done
-> is not recurring
 > description does not include ]]
 > path includes -Daily-Notes
 > (heading does not include Focus) AND (heading does not include Goals)
@@ -198,7 +204,6 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > not done
-> is not recurring
 > description does not include ]]
 > (path does not include -Daily-Notes) AND (path does not include -Periodic-Notes)
 > filename does not include Passions Backlog 🎮
@@ -213,7 +218,6 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > not done
-> is not recurring
 > description includes ]]
 > created on <% moment(tp.file.title, "YYYY-MM").format("YYYY-MM") %>
 > group by created
@@ -223,7 +227,6 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > not done
-> is not recurring
 > description does not include ]]
 > created on <% moment(tp.file.title, "YYYY-MM").format("YYYY-MM") %>
 > group by created
@@ -233,7 +236,6 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > description includes ]]
-> is not recurring
 > done in <% moment(tp.file.title, "YYYY-MM").format("YYYY-MM") %>
 > group by done
 > ```
@@ -242,7 +244,6 @@ await dv.view("_Scripts", {pages: "dv.pages().file.where(f => f.folder != '_Sour
 >
 > ```tasks
 > description does not include ]]
-> is not recurring
 > done in <% moment(tp.file.title, "YYYY-MM").format("YYYY-MM") %>
 > group by done
 > ```

@@ -2,10 +2,10 @@
 title: <% moment(tp.file.title, "YYYY-MM-DD").format("YYYY-MM-DD") %>
 date: <% moment(tp.file.creation_date()).format("YYYY-MM-DD HH:mm:ss") %>
 lastmod: <% moment(tp.file.creation_date()).format("YYYY-MM-DD HH:mm:ss") %>
-categories: 
+categories:
 tags: daily-notes
-aliases: 
-share: false 
+aliases:
+share: false
 ---
 
 # <% moment(tp.file.title, "YYYY-MM-DD").format("YYYY-MM-DD") %>
@@ -51,10 +51,11 @@ tR += rightAngle;
 >
 > ```tasks
 > not done
+> is not recurring
 > description does not include ]]
 > tags include #next
-> short mode
 > group by function task.tags.filter( (tag) => tag.includes("#next") )
+> short mode
 > ```
 
 ## Notes 📝
@@ -114,6 +115,7 @@ filter: "#Inbox"
 >
 > ```tasks
 > not done
+> is not recurring
 > description does not include ]]
 > tags include #next
 > group by function task.tags.filter( (tag) => ! tag.includes("#next") )
@@ -123,6 +125,7 @@ filter: "#Inbox"
 >
 > ```tasks
 > not done
+> is not recurring
 > description includes ]]
 > filename does not include Passions Backlog 🎮
 > (heading does not include Focus) AND (heading does not include Goals)
@@ -135,6 +138,7 @@ filter: "#Inbox"
 >
 > ```tasks
 > not done
+> is not recurring
 > description does not include ]]
 > tags include #waiting
 > group by filename
@@ -144,6 +148,7 @@ filter: "#Inbox"
 >
 > ```tasks
 > not done
+> is not recurring
 > description does not include ]]
 > tags include #delegated
 > group by filename
@@ -153,6 +158,7 @@ filter: "#Inbox"
 >
 > ```tasks
 > not done
+> is not recurring
 > (path includes -Daily-Notes) OR (path includes -Periodic-Notes)
 > (heading includes Focus) AND (heading includes Goals)
 > group by function '%%' + (task.heading.includes("Yearly Focus 🔥 & Goals 🎯") ? "1" : task.heading.includes("Quarterly Focus 🔥 & Goals 🎯") ? "2" : task.heading.includes("Monthly Focus 🔥 & Goals 🎯") ? "3" : task.heading.includes("Weekly Focus 🔥 & Goals 🎯") ? "4" : task.heading.includes("Daily Focus 🔥 & Goals 🎯") ? "5" : "6") + '%%' + task.heading + " > " + task.file.filenameWithoutExtension + " > " + task.tags
@@ -164,6 +170,7 @@ filter: "#Inbox"
 >
 > ```tasks
 > not done
+> is not recurring
 > filename includes Passions Backlog 🎮
 > heading includes Doing
 > group by heading
@@ -175,7 +182,6 @@ filter: "#Inbox"
 >
 > ```tasks
 > not done
-> is not recurring
 > description includes ]]
 > created on <% moment(tp.file.title, "YYYY-MM-DD").format("YYYY-MM-DD") %>
 > group by filename
@@ -185,7 +191,6 @@ filter: "#Inbox"
 >
 > ```tasks
 > not done
-> is not recurring
 > description does not include ]]
 > created on <% moment(tp.file.title, "YYYY-MM-DD").format("YYYY-MM-DD") %>
 > group by filename
