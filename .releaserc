@@ -18,6 +18,9 @@
             {
                 "preset": "conventionalcommits"
             }
+        ],
+        [
+            "@semantic-release/github"
         ]
     ]
 }
