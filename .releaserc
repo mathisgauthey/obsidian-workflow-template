@@ -1,0 +1,23 @@
+{
+    "branches": [
+        "main"
+    ],
+    "tagFormat": "${version}",
+    "debug": true,
+    "ci": true,
+    "dryRun": false,
+    "plugins": [
+        [
+            "@semantic-release/commit-analyzer",
+            {
+                "preset": "conventionalcommits"
+            }
+        ],
+        [
+            "@semantic-release/release-notes-generator",
+            {
+                "preset": "conventionalcommits"
+            }
+        ]
+    ]
+}
