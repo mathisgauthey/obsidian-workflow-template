@@ -4,7 +4,8 @@ module.exports = {
   GetAllTasksFromSection: GetAllTasksFromSection,
 };
 
-const getTodoistPluginApi = (t) => t.plugins.plugins["todoist-sync-plugin"].api;
+const getTodoistPluginApi = (t) =>
+  t.plugins.plugins["todoist-sync-plugin"].services.todoist.api.value;
 async function SelectFromAllTasks(t) {
   const s = await getAllTasks(t);
   if (0 === s.length) return void new Notice("No tasks.");
@@ -52,8 +53,8 @@ async function GetAllTasksFromSection(t) {
   new Notice(`No tasks in '${n.name}'.`);
 }
 async function getAllTasks(t) {
-  const s = getTodoistPluginApi(t.app),
-    { ok: e } = await s.getTasks();
+  const s = getTodoistPluginApi(t.app);
+  e = await s.getTasks();
   return e;
 }
 async function selectTasks(t, s) {
@@ -71,7 +72,9 @@ function formatTasksToTasksPluginTask(t) {
       .map(
         (t) =>
           (t = t.rawDatetime
-            ? `- [ ] [[${t.content}]] \u2795 ${todayDate} \ud83d\udcc5 ${t.rawDatetime.format(
+            ? `- [ ] [[${
+                t.content
+              }]] \u2795 ${todayDate} \ud83d\udcc5 ${t.rawDatetime.format(
                 "YYYY-MM-DD"
               )}`
             : `- [ ] [[${t.content}]] \u2795 ${todayDate}`)
