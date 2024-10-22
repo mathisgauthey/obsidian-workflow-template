@@ -238,7 +238,7 @@ Mood::
 
 An Interesting Title :
 
-Accomplishments | Failures | Lessons learned | Good and king things I did | Positive and grateful for :
+Accomplishments | Failures | Lessons learned | Good and kind things I did | Positive and grateful for :
 
 -
 
