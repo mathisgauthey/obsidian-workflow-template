@@ -1,5 +1,20 @@
 # README
 
+## Project in archived status 💽
+
+This started as a quick one-off showcase, even though I ended up polishing it a bit and even wrote up some docs (hey, I got carried away!).
+But these days, I’ve moved on to Capacities and don’t use this setup anymore. As a result, and in addition to not finding interest in maintaining complexe workflows, **I won’t be providing further support or updates unfortunately.**
+
+That said, if you find something useful here, feel free to take inspiration from what’s here and build your own version that works for you ! This is ultimately what I would recommend as we all work differently.
+
+Cheers !
+
+## Project in archived status
+
+This project was meant as a one-shot at first. I eventually updated it with my usages and created a documentation page as shown bellow. But I no longer use that workflow template myself as I migrated to Capacities a while back, so I don't intend to keep working on it either.
+
+Please feel free to inspire yourself from the accumulated knowledge and setup here and build your own one that work with you. But I wont be providing any more support on this project as this is no longer of interest to me.
+
 ## Introduction
 
 ![image](_Media/24-01-04_15-52-03_Obsidian.png)
